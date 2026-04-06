@@ -21,6 +21,32 @@
   gap: 16px;
 }
 
+.hero-copy__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.session-pill {
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: var(--surface-soft);
+  border: 1px solid var(--field-border);
+}
+
+.session-pill strong {
+  font-size: 0.95rem;
+}
+
+.session-pill small {
+  color: var(--text-muted);
+}
+
 .theme-switcher {
   display: inline-flex;
   flex-wrap: wrap;
@@ -178,6 +204,16 @@
   .hero-copy__top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero-copy__actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .session-pill,
+  .ghost-button {
+    width: 100%;
   }
 
   .theme-switcher {

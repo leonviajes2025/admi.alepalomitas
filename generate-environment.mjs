@@ -11,6 +11,8 @@ const apiBaseUrl = process.env.NG_APP_API_BASE_URL || '/api';
 const diagnosticsFallback = mode === 'development' ? 'true' : 'false';
 const diagnosticsValue = (process.env.NG_APP_API_DIAGNOSTICS || diagnosticsFallback).toLowerCase();
 const apiDiagnostics = truthy.has(diagnosticsValue);
+const authDefaultUsername = process.env.NG_APP_DEFAULT_ADMIN_USERNAME || (mode === 'development' ? 'alejandrina' : '');
+const authDefaultPassword = process.env.NG_APP_DEFAULT_ADMIN_PASSWORD || (mode === 'development' ? 'alejandrina123' : '');
 const supabaseUrl = process.env.NG_APP_SUPABASE_URL || '';
 const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || 'https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3';
 const supabaseAnonKey = process.env.NG_APP_SUPABASE_ANON_KEY || '';
@@ -21,6 +23,10 @@ const content = `export const environment = {
   production: ${mode === 'production'},
   apiBaseUrl: ${JSON.stringify(apiBaseUrl)},
   apiDiagnostics: ${apiDiagnostics},
+  auth: {
+    defaultUsername: ${JSON.stringify(authDefaultUsername)},
+    defaultPassword: ${JSON.stringify(authDefaultPassword)}
+  },
   supabase: {
     url: ${JSON.stringify(supabaseUrl)},
     storageUrl: ${JSON.stringify(supabaseStorageUrl)},

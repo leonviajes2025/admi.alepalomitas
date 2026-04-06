@@ -1,69 +1,82 @@
-<div class="app-shell">
-  <header class="hero page-shell">
-    <div class="hero-copy">
-      <div class="hero-copy__top">
-        <span class="section-eyebrow">Panel administrativo</span>
+@if (showShell()) {
+  <div class="app-shell">
+    <header class="hero page-shell">
+      <div class="hero-copy">
+        <div class="hero-copy__top">
+          <span class="section-eyebrow">Panel administrativo</span>
 
-        <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
-          <button
-            class="theme-switcher__button"
-            type="button"
-            [class.is-active]="theme() === 'dark'"
-            [attr.aria-selected]="theme() === 'dark'"
-            (click)="setTheme('dark')"
-          >
-            Oscuro
-          </button>
-          <button
-            class="theme-switcher__button"
-            type="button"
-            [class.is-active]="theme() === 'light'"
-            [attr.aria-selected]="theme() === 'light'"
-            (click)="setTheme('light')"
-          >
-            Claro
-          </button>
+          <div class="hero-copy__actions">
+            <div class="session-pill">
+              <strong>{{ currentUser()?.nombreCompleto || currentUser()?.nombreUsuario }}</strong>
+              <small>{{ currentUser()?.nombreUsuario }}</small>
+            </div>
+
+            <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
+              <button
+                class="theme-switcher__button"
+                type="button"
+                [class.is-active]="theme() === 'dark'"
+                [attr.aria-selected]="theme() === 'dark'"
+                (click)="setTheme('dark')"
+              >
+                Oscuro
+              </button>
+              <button
+                class="theme-switcher__button"
+                type="button"
+                [class.is-active]="theme() === 'light'"
+                [attr.aria-selected]="theme() === 'light'"
+                (click)="setTheme('light')"
+              >
+                Claro
+              </button>
+            </div>
+
+            <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
+          </div>
         </div>
+
+        <h1>Gestion centralizada para productos, contactos y cotizaciones.</h1>
+        <p>
+          Una interfaz standalone en Angular 19 para operar el catalogo, consultar leads y monitorear
+          solicitudes que llegan por WhatsApp.
+        </p>
       </div>
 
-      <h1>Gestion centralizada para productos, contactos y cotizaciones.</h1>
-      <p>
-        Una interfaz standalone en Angular 19 para operar el catalogo, consultar leads y monitorear
-        solicitudes que llegan por WhatsApp.
-      </p>
-    </div>
-
-    <div class="hero-metrics panel">
-      @for (metric of metrics; track metric.label) {
-        <article>
-          <span>{{ metric.label }}</span>
-          <strong>{{ metric.value }}</strong>
-          <small>{{ metric.caption }}</small>
-        </article>
-      }
-    </div>
-  </header>
-
-  <div class="page-shell layout-grid">
-    <aside class="panel side-nav">
-      <p class="side-nav__title">Navegacion</p>
-
-      <nav>
-        @for (item of navigation; track item.path) {
-          <a
-            [routerLink]="item.path"
-            routerLinkActive="is-active"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <span>{{ item.label }}</span>
-            <small>{{ item.description }}</small>
-          </a>
+      <div class="hero-metrics panel">
+        @for (metric of metrics; track metric.label) {
+          <article>
+            <span>{{ metric.label }}</span>
+            <strong>{{ metric.value }}</strong>
+            <small>{{ metric.caption }}</small>
+          </article>
         }
-      </nav>
-    </aside>
+      </div>
+    </header>
 
-    <main class="view-frame">
-      <router-outlet></router-outlet>
-    </main>
+    <div class="page-shell layout-grid">
+      <aside class="panel side-nav">
+        <p class="side-nav__title">Navegacion</p>
+
+        <nav>
+          @for (item of navigation; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              <span>{{ item.label }}</span>
+              <small>{{ item.description }}</small>
+            </a>
+          }
+        </nav>
+      </aside>
+
+      <main class="view-frame">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
   </div>
-</div>
+} @else {
+  <router-outlet></router-outlet>
+}

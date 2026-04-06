@@ -1,9 +1,12 @@
 
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map, startWith } from 'rxjs';
 
 import { APP_NAVIGATION, DASHBOARD_METRICS } from './core/content/dashboard.content';
+import { AuthService } from './core/services/auth.service';
 
 type ThemeMode = 'dark' | 'light';
 
@@ -17,13 +20,32 @@ type ThemeMode = 'dark' | 'light';
 })
 export class AppComponent {
   private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url),
+      startWith(this.router.url)
+    ),
+    { initialValue: this.router.url }
+  );
 
   protected readonly navigation = APP_NAVIGATION;
   protected readonly metrics = DASHBOARD_METRICS;
   protected readonly theme = signal<ThemeMode>(this.getInitialTheme());
+  protected readonly currentUser = this.authService.currentUser;
+  protected readonly showShell = computed(
+    () => this.authService.isAuthenticated() && !this.currentUrl().startsWith('/login')
+  );
 
   constructor() {
     this.applyTheme(this.theme());
+  }
+
+  protected logout(): void {
+    this.authService.logout();
+    void this.router.navigate(['/login']);
   }
 
   protected setTheme(theme: ThemeMode): void {

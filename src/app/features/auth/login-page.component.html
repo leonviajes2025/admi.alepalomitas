@@ -1,0 +1,48 @@
+<section class="login-page page-shell">
+  <div class="login-layout">
+    <article class="login-copy">
+      <span class="section-eyebrow">Acceso administrativo</span>
+      <h1>Inicia sesion antes de entrar al panel.</h1>
+    </article>
+
+    <article class="panel login-card">
+      <div class="section-heading">
+        <div>
+          <h2>Entrar al panel</h2>
+          <p>Usa tus credenciales administrativas para continuar.</p>
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="status-message error">{{ errorMessage() }}</p>
+      }
+
+      <form [formGroup]="loginForm" class="login-form" (ngSubmit)="submit()">
+        <div class="field-group">
+          <label for="nombreUsuario">Usuario</label>
+          <input id="nombreUsuario" type="text" formControlName="nombreUsuario" autocomplete="username" />
+        </div>
+
+        <div class="field-group">
+          <label for="contrasena">Contrasena</label>
+          <input
+            id="contrasena"
+            type="password"
+            formControlName="contrasena"
+            autocomplete="current-password"
+          />
+        </div>
+
+        @if (hasDefaultCredentials) {
+          <p class="login-hint">
+            Credenciales locales precargadas para pruebas: {{ loginForm.controls.nombreUsuario.value }} / {{ loginForm.controls.contrasena.value }}
+          </p>
+        }
+
+        <button class="action-button login-submit" type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Validando acceso...' : 'Entrar' }}
+        </button>
+      </form>
+    </article>
+  </div>
+</section>

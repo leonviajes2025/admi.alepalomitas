@@ -2,6 +2,10 @@ export const environment = {
   production: false,
   apiBaseUrl: "/api",
   apiDiagnostics: true,
+  auth: {
+    defaultUsername: "alejandrina",
+    defaultPassword: "alejandrina123"
+  },
   supabase: {
     url: "",
     storageUrl: "https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3",

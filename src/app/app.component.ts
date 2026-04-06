@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 
-import { APP_NAVIGATION, DASHBOARD_METRICS } from './core/content/dashboard.content';
+import { APP_NAVIGATION } from './core/content/dashboard.content';
 import { AuthService } from './core/services/auth.service';
 
 type ThemeMode = 'dark' | 'light';
@@ -32,7 +32,6 @@ export class AppComponent {
   );
 
   protected readonly navigation = APP_NAVIGATION;
-  protected readonly metrics = DASHBOARD_METRICS;
   protected readonly theme = signal<ThemeMode>(this.getInitialTheme());
   protected readonly isMobileNavigationOpen = signal(false);
   protected readonly currentUser = this.authService.currentUser;

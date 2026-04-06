@@ -19,7 +19,7 @@ export class ProductsPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly apiService = inject(AdminApiService);
   private readonly storageService = inject(SupabaseStorageService);
-  protected readonly categoryOptions = ['dulce', 'salada'] as const;
+  protected readonly categoryOptions: readonly string[] = ['dulce', 'salada', 'dulce/salada'];
   protected readonly canUploadImages = this.storageService.isConfigured();
   protected readonly isMobileImageCaptureAvailable = signal(false);
 
@@ -39,7 +39,7 @@ export class ProductsPageComponent {
 
   protected readonly productForm = this.formBuilder.nonNullable.group({
     nombre: ['', [Validators.required, this.noWhitespaceValidator()]],
-    categoria: ['', [Validators.required]],
+    categoria: [this.categoryOptions[0], [Validators.required]],
     descripcion: ['', [Validators.required, this.noWhitespaceValidator()]],
     precio: ['', [Validators.required, this.noWhitespaceValidator()]],
     imagenUrl: ['', [Validators.required]],
@@ -263,7 +263,7 @@ export class ProductsPageComponent {
     this.selectedImageName.set('');
     this.productForm.reset({
       nombre: '',
-      categoria: '',
+      categoria: this.categoryOptions[0],
       descripcion: '',
       precio: '',
       imagenUrl: '',

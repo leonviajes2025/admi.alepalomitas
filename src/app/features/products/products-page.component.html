@@ -61,7 +61,6 @@
           <div class="field-group">
             <label for="categoria">Categoria</label>
             <select id="categoria" formControlName="categoria" [class.is-invalid]="showFieldError('categoria')">
-              <option value="" disabled>Selecciona una categoria</option>
               @for (category of categoryOptions; track category) {
                 <option [value]="category">{{ category }}</option>
               }

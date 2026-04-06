@@ -98,6 +98,14 @@
             </select>
           </div>
 
+          <div class="field-group">
+            <label for="visible">Visible</label>
+            <select id="visible" formControlName="visible">
+              <option [ngValue]="true">Visible</option>
+              <option [ngValue]="false">Oculto</option>
+            </select>
+          </div>
+
           <div class="field-group full">
             <label for="productImage">Subir imagen</label>
             <div class="upload-panel">
@@ -217,7 +225,7 @@
                 <tr>
                   <th>Producto</th>
                   <th>Precio</th>
-                  <th>Estado</th>
+                  <th>Visible</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -263,10 +271,26 @@
                         {{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}
                       </span>
                     </td>
-                    <td class="status-cell" data-label="Estado">
-                      <span class="badge" [class.success]="product.activo" [class.muted]="!product.activo">
-                        {{ product.activo ? 'Activo' : 'Inactivo' }}
-                      </span>
+                    <td class="status-cell" data-label="Visible">
+                      <button
+                        class="visibility-toggle"
+                        type="button"
+                        [class.is-visible]="isProductVisible(product)"
+                        [class.is-hidden]="!isProductVisible(product)"
+                        (click)="toggleProductVisibility(product)"
+                        [disabled]="isSaving()"
+                        [attr.aria-pressed]="isProductVisible(product)"
+                        [attr.aria-label]="(isProductVisible(product) ? 'Ocultar ' : 'Mostrar ') + product.nombre"
+                        [attr.title]="isProductVisible(product) ? 'Visible' : 'No visible'"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path
+                            d="M12 5c5.23 0 9.27 3.11 10.94 6.2a1.8 1.8 0 0 1 0 1.6C21.27 15.89 17.23 19 12 19S2.73 15.89 1.06 12.8a1.8 1.8 0 0 1 0-1.6C2.73 8.11 6.77 5 12 5Zm0 2C7.69 7 4.31 9.49 2.83 12 4.31 14.51 7.69 17 12 17s7.69-2.49 9.17-5C19.69 9.49 16.31 7 12 7Zm0 1.75A3.25 3.25 0 1 1 8.75 12 3.25 3.25 0 0 1 12 8.75Zm0 2A1.25 1.25 0 1 0 13.25 12 1.25 1.25 0 0 0 12 10.75Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span>{{ isProductVisible(product) ? 'Visible' : 'Oculto' }}</span>
+                      </button>
                     </td>
                     <td class="actions-cell" data-label="Acciones">
                       <div class="row-actions">

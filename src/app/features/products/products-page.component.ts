@@ -43,7 +43,8 @@ export class ProductsPageComponent {
     descripcion: ['', [Validators.required, this.noWhitespaceValidator()]],
     precio: ['', [Validators.required, this.noWhitespaceValidator()]],
     imagenUrl: ['', [Validators.required]],
-    activo: [true, [Validators.required]]
+    activo: [true, [Validators.required]],
+    visible: [true, [Validators.required]]
   });
 
   constructor() {
@@ -190,10 +191,48 @@ export class ProductsPageComponent {
       descripcion: product.descripcion,
       precio: product.precio,
       imagenUrl: product.imagenUrl,
-      activo: product.activo
+      activo: product.activo,
+      visible: product.visible ?? true
     });
     this.successMessage.set('');
     this.errorMessage.set('');
+  }
+
+  protected toggleProductVisibility(product: Product): void {
+    const nextVisible = !(product.visible ?? true);
+
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.isSaving.set(true);
+
+    this.apiService
+      .updateProduct(product.id, { visible: nextVisible })
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        next: () => {
+          if (this.editingId() === product.id) {
+            this.productForm.patchValue({ visible: nextVisible });
+          }
+
+          this.products.update((products) =>
+            products.map((currentProduct) =>
+              currentProduct.id === product.id
+                ? { ...currentProduct, visible: nextVisible }
+                : currentProduct
+            )
+          );
+          this.successMessage.set(
+            nextVisible
+              ? 'Producto marcado como visible.'
+              : 'Producto marcado como no visible.'
+          );
+        },
+        error: () => this.errorMessage.set('No fue posible actualizar la visibilidad del producto.')
+      });
+  }
+
+  protected isProductVisible(product: Product): boolean {
+    return product.visible ?? true;
   }
 
   protected deleteProduct(product: Product): void {
@@ -228,7 +267,8 @@ export class ProductsPageComponent {
       descripcion: '',
       precio: '',
       imagenUrl: '',
-      activo: true
+      activo: true,
+      visible: true
     });
   }
 

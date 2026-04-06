@@ -14,7 +14,7 @@ export class AdminApiService {
   private readonly apiBaseUrl = environment.apiBaseUrl;
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos`);
+    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`);
   }
 
   createProduct(payload: ProductPayload): Observable<Product> {
@@ -25,8 +25,11 @@ export class AdminApiService {
     return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, payload);
   }
 
-  deleteProduct(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiBaseUrl}/productos/${id}`);
+  deleteProduct(id: number): Observable<Product> {
+    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, {
+      activo: false,
+      visible: false
+    });
   }
 
   getContacts(): Observable<Contact[]> {

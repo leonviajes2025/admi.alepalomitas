@@ -209,7 +209,7 @@ export class ProductsPageComponent {
           if (this.editingId() === product.id) {
             this.resetForm();
           }
-          this.successMessage.set('Producto eliminado.');
+          this.successMessage.set('Producto dado de baja.');
           this.loadProducts();
         },
         error: () => this.errorMessage.set('No fue posible eliminar el producto.')

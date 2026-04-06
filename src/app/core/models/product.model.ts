@@ -6,6 +6,7 @@ export interface Product {
   precio: string;
   imagenUrl: string;
   activo: boolean;
+  visible?: boolean;
 }
 
 export interface ProductPayload {
@@ -15,4 +16,5 @@ export interface ProductPayload {
   precio: string;
   imagenUrl: string;
   activo: boolean;
+  visible?: boolean;
 }

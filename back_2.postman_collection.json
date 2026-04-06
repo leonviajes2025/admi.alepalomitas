@@ -107,6 +107,13 @@
           }
         },
         {
+          "name": "GET productos visibles",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos/visibles"
+          }
+        },
+        {
           "name": "POST producto",
           "event": [
             {
@@ -132,7 +139,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true\n}"
+              "raw": "{\n  \"nombre\": \"Producto Postman\",\n  \"categoria\": \"Accesorios\",\n  \"descripcion\": \"Creado desde la coleccion de Postman\",\n  \"precio\": \"220.00\",\n  \"imagenUrl\": \"https://example.com/postman.jpg\",\n  \"activo\": true,\n  \"visible\": true\n}"
             },
             "url": "{{baseUrl}}/api/productos"
           }
@@ -149,7 +156,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\"\n}"
+              "raw": "{\n  \"nombre\": \"Producto Actualizado Postman\",\n  \"categoria\": \"Hogar\",\n  \"precio\": \"180.00\",\n  \"visible\": false\n}"
             },
             "url": "{{baseUrl}}/api/productos/{{productoId}}"
           }
@@ -355,6 +362,35 @@
               "raw": "{\n  \"nombreUsuario\": \"{{nombreUsuarioAccesoNuevo}}\",\n  \"contrasena\": \"{{contrasenaAccesoNueva}}\"\n}"
             },
             "url": "{{baseUrl}}/api/inicios-sesion"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logs de Errores",
+      "item": [
+        {
+          "name": "GET logs-errores",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/logs-errores"
+          }
+        },
+        {
+          "name": "POST log-error",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dominio\": \"frontend-web\",\n  \"origen\": \"checkout\",\n  \"metodo\": \"POST\",\n  \"codigo\": \"PAYMENT_TIMEOUT\",\n  \"mensaje\": \"No fue posible completar el cobro.\",\n  \"detalle\": \"La pasarela no respondio dentro del tiempo esperado.\",\n  \"contexto\": {\n    \"pedidoId\": 123,\n    \"traceId\": \"req-01HXYZ\"\n  },\n  \"fechaOcurrencia\": \"2026-04-05T18:45:12.000Z\"\n}"
+            },
+            "url": "{{baseUrl}}/api/logs-errores"
           }
         }
       ]

@@ -33,6 +33,7 @@ export class ProductsPageComponent {
   protected readonly originalImageUrl = signal('');
   protected readonly pendingUploadedImageUrl = signal('');
   protected readonly selectedImageName = signal('');
+  protected readonly failedProductImageIds = signal<ReadonlySet<number>>(new Set());
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');
 
@@ -63,7 +64,10 @@ export class ProductsPageComponent {
       .getProducts()
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (products) => this.products.set(products),
+        next: (products) => {
+          this.products.set(products);
+          this.failedProductImageIds.set(new Set());
+        },
         error: () => this.errorMessage.set('No fue posible cargar los productos.')
       });
   }
@@ -238,6 +242,22 @@ export class ProductsPageComponent {
 
   protected formatPrice(value: string): number {
     return Number.parseFloat(value || '0');
+  }
+
+  protected hasRenderableProductImage(product: Product): boolean {
+    return Boolean(product.imagenUrl) && !this.failedProductImageIds().has(product.id);
+  }
+
+  protected markProductImageAsFailed(productId: number): void {
+    const currentFailedImageIds = this.failedProductImageIds();
+
+    if (currentFailedImageIds.has(productId)) {
+      return;
+    }
+
+    const nextFailedImageIds = new Set(currentFailedImageIds);
+    nextFailedImageIds.add(productId);
+    this.failedProductImageIds.set(nextFailedImageIds);
   }
 
   protected showFieldError(controlName: 'nombre' | 'categoria' | 'descripcion' | 'precio' | 'imagenUrl'): boolean {

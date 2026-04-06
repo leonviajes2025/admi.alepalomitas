@@ -226,11 +226,29 @@
                   <tr>
                     <td class="product-cell" data-label="Producto">
                       <div class="product-summary">
-                        <div class="product-summary__header">
-                          <strong>{{ product.nombre }}</strong>
-                          <span class="product-category">{{ product.categoria }}</span>
+                        <div class="product-media" [class.is-placeholder]="!hasRenderableProductImage(product)">
+                          @if (hasRenderableProductImage(product)) {
+                            <img
+                              class="product-thumbnail"
+                              [src]="product.imagenUrl"
+                              [alt]="product.nombre"
+                              loading="lazy"
+                              (error)="markProductImageAsFailed(product.id)"
+                            />
+                          } @else {
+                            <div class="product-placeholder" aria-hidden="true">
+                              <span>Sin imagen</span>
+                            </div>
+                          }
                         </div>
-                        <p class="product-description">{{ product.descripcion }}</p>
+
+                        <div class="product-summary__content">
+                          <div class="product-summary__header">
+                            <strong>{{ product.nombre }}</strong>
+                            <span class="product-category">{{ product.categoria }}</span>
+                          </div>
+                          <p class="product-description">{{ product.descripcion }}</p>
+                        </div>
                       </div>
                     </td>
                     <td class="price-cell" data-label="Precio">

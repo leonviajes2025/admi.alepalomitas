@@ -1,6 +1,6 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 
 import { Product, ProductPayload } from '../../core/models/product.model';
@@ -36,11 +36,11 @@ export class ProductsPageComponent {
   protected readonly successMessage = signal('');
 
   protected readonly productForm = this.formBuilder.nonNullable.group({
-    nombre: ['', [Validators.required, Validators.maxLength(80)]],
+    nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80), this.noWhitespaceValidator()]],
     categoria: ['', [Validators.required, Validators.pattern(/^(dulce|salada)$/)]],
-    descripcion: ['', [Validators.required, Validators.maxLength(400)]],
-    precio: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/)]],
-    imagenUrl: ['', [Validators.required]],
+    descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(400), this.noWhitespaceValidator()]],
+    precio: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), this.positivePriceValidator()]],
+    imagenUrl: ['', [Validators.required, this.validUrlValidator()]],
     activo: [true, [Validators.required]]
   });
 
@@ -82,7 +82,17 @@ export class ProductsPageComponent {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    const payload = this.productForm.getRawValue() as ProductPayload;
+    const rawValue = this.productForm.getRawValue();
+    const payload: ProductPayload = {
+      ...rawValue,
+      nombre: rawValue.nombre.trim(),
+      descripcion: rawValue.descripcion.trim(),
+      precio: rawValue.precio.trim(),
+      imagenUrl: rawValue.imagenUrl.trim()
+    };
+
+    this.productForm.patchValue(payload, { emitEvent: false });
+
     const editingId = this.editingId();
     const previousImageUrl = this.originalImageUrl();
     const request$ = editingId === null
@@ -106,6 +116,7 @@ export class ProductsPageComponent {
   protected async onImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.item(0);
+    const uploadSource = input.dataset['uploadSource'] === 'camera' ? 'camera' : 'gallery';
 
     if (!file) {
       return;
@@ -133,13 +144,24 @@ export class ProductsPageComponent {
     try {
       const imageUrl = await this.storageService.uploadProductImage(file);
 
+      try {
+        await this.storageService.validateProductImageUpload(imageUrl);
+      } catch (error) {
+        await this.deleteImageSilently(imageUrl);
+        throw error;
+      }
+
       if (previousPendingImageUrl && previousPendingImageUrl !== imageUrl) {
         await this.deleteImageSilently(previousPendingImageUrl);
       }
 
       this.productForm.patchValue({ imagenUrl: imageUrl });
       this.pendingUploadedImageUrl.set(imageUrl);
-      this.successMessage.set('Imagen subida correctamente.');
+      this.successMessage.set(
+        uploadSource === 'camera'
+          ? 'Foto subida correctamente al bucket de Supabase y URL cargada en el formulario.'
+          : 'Imagen subida correctamente al bucket de Supabase y URL cargada en el formulario.'
+      );
     } catch (error) {
       this.errorMessage.set(this.getUploadErrorMessage(error));
     } finally {
@@ -215,6 +237,64 @@ export class ProductsPageComponent {
     return Number.parseFloat(value || '0');
   }
 
+  protected showFieldError(controlName: 'nombre' | 'categoria' | 'descripcion' | 'precio' | 'imagenUrl'): boolean {
+    const control = this.productForm.controls[controlName];
+    return control.invalid && (control.dirty || control.touched);
+  }
+
+  protected getFieldErrorMessage(controlName: 'nombre' | 'categoria' | 'descripcion' | 'precio' | 'imagenUrl'): string {
+    const control = this.productForm.controls[controlName];
+
+    if (control.hasError('required')) {
+      switch (controlName) {
+        case 'nombre':
+          return 'Ingresa el nombre del producto.';
+        case 'categoria':
+          return 'Selecciona una categoria.';
+        case 'descripcion':
+          return 'Ingresa la descripcion del producto.';
+        case 'precio':
+          return 'Ingresa el precio del producto.';
+        case 'imagenUrl':
+          return 'Carga una imagen o captura una foto para generar la URL.';
+      }
+    }
+
+    if (control.hasError('whitespace')) {
+      return controlName === 'nombre'
+        ? 'El nombre no puede contener solo espacios.'
+        : 'La descripcion no puede contener solo espacios.';
+    }
+
+    if (control.hasError('minlength')) {
+      return controlName === 'nombre'
+        ? 'El nombre debe tener al menos 3 caracteres.'
+        : 'La descripcion debe tener al menos 10 caracteres.';
+    }
+
+    if (control.hasError('maxlength')) {
+      return controlName === 'nombre'
+        ? 'El nombre no puede superar los 80 caracteres.'
+        : 'La descripcion no puede superar los 400 caracteres.';
+    }
+
+    if (control.hasError('pattern')) {
+      return controlName === 'precio'
+        ? 'Ingresa un precio valido, con hasta 2 decimales.'
+        : 'Selecciona una categoria valida.';
+    }
+
+    if (control.hasError('invalidPrice')) {
+      return 'El precio debe ser mayor a 0.';
+    }
+
+    if (control.hasError('invalidUrl')) {
+      return 'La URL de la imagen no es valida.';
+    }
+
+    return 'Revisa este campo.';
+  }
+
   private async handleSuccessfulSubmit(
     editingId: number | null,
     previousImageUrl: string,
@@ -273,6 +353,43 @@ export class ProductsPageComponent {
     }
 
     return /\.(avif|bmp|gif|heic|heif|jpeg|jpg|png|webp)$/i.test(file.name);
+  }
+
+  private noWhitespaceValidator(): ValidatorFn {
+    return (control: AbstractControl<string>): ValidationErrors | null => {
+      const value = control.value;
+      return typeof value === 'string' && value.trim().length === 0 ? { whitespace: true } : null;
+    };
+  }
+
+  private positivePriceValidator(): ValidatorFn {
+    return (control: AbstractControl<string>): ValidationErrors | null => {
+      const value = control.value;
+
+      if (typeof value !== 'string' || value.trim().length === 0) {
+        return null;
+      }
+
+      const numericValue = Number.parseFloat(value);
+      return Number.isFinite(numericValue) && numericValue > 0 ? null : { invalidPrice: true };
+    };
+  }
+
+  private validUrlValidator(): ValidatorFn {
+    return (control: AbstractControl<string>): ValidationErrors | null => {
+      const value = control.value;
+
+      if (typeof value !== 'string' || value.trim().length === 0) {
+        return null;
+      }
+
+      try {
+        const url = new URL(value);
+        return /^https?:$/.test(url.protocol) ? null : { invalidUrl: true };
+      } catch {
+        return { invalidUrl: true };
+      }
+    };
   }
 
   private updateMobileImageCaptureAvailability(): void {

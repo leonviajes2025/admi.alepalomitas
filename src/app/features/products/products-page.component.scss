@@ -99,6 +99,19 @@
   gap: 8px;
 }
 
+.field-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.field-group input.is-invalid,
+.field-group textarea.is-invalid,
+.field-group select.is-invalid {
+  border-color: color-mix(in srgb, var(--danger) 68%, var(--field-border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--danger) 28%, transparent);
+}
+
 .upload-actions {
   display: flex;
   flex-wrap: wrap;

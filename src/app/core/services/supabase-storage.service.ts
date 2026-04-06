@@ -69,6 +69,36 @@ export class SupabaseStorageService {
     return true;
   }
 
+  async validateProductImageUpload(publicUrl: string): Promise<void> {
+    if (!this.isConfigured()) {
+      throw new Error('Configura Supabase antes de validar imagenes.');
+    }
+
+    const objectPath = this.extractObjectPathFromPublicUrl(publicUrl);
+
+    if (!objectPath) {
+      throw new Error('La imagen no quedo asociada al bucket configurado en Supabase.');
+    }
+
+    const headResponse = await fetch(publicUrl, {
+      method: 'HEAD',
+      cache: 'no-store'
+    }).catch(() => null);
+
+    if (headResponse?.ok) {
+      return;
+    }
+
+    const getResponse = await fetch(publicUrl, {
+      method: 'GET',
+      cache: 'no-store'
+    }).catch(() => null);
+
+    if (!getResponse?.ok) {
+      throw new Error('La imagen se subio, pero no fue posible confirmar su disponibilidad en el bucket de Supabase.');
+    }
+  }
+
   private async uploadProductImageThroughApi(file: File): Promise<string> {
     const response = await fetch(this.uploadApiUrl, {
       method: 'POST',

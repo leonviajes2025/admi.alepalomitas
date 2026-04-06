@@ -51,27 +51,43 @@
         <div class="form-grid">
           <div class="field-group">
             <label for="nombre">Nombre</label>
-            <input id="nombre" formControlName="nombre" type="text" />
+            <input id="nombre" formControlName="nombre" type="text" [class.is-invalid]="showFieldError('nombre')" />
+
+            @if (showFieldError('nombre')) {
+              <small class="field-error">{{ getFieldErrorMessage('nombre') }}</small>
+            }
           </div>
 
           <div class="field-group">
             <label for="categoria">Categoria</label>
-            <select id="categoria" formControlName="categoria">
+            <select id="categoria" formControlName="categoria" [class.is-invalid]="showFieldError('categoria')">
               <option value="" disabled>Selecciona una categoria</option>
               @for (category of categoryOptions; track category) {
                 <option [value]="category">{{ category }}</option>
               }
             </select>
+
+            @if (showFieldError('categoria')) {
+              <small class="field-error">{{ getFieldErrorMessage('categoria') }}</small>
+            }
           </div>
 
           <div class="field-group full">
             <label for="descripcion">Descripcion</label>
-            <textarea id="descripcion" formControlName="descripcion"></textarea>
+            <textarea id="descripcion" formControlName="descripcion" [class.is-invalid]="showFieldError('descripcion')"></textarea>
+
+            @if (showFieldError('descripcion')) {
+              <small class="field-error">{{ getFieldErrorMessage('descripcion') }}</small>
+            }
           </div>
 
           <div class="field-group">
             <label for="precio">Precio</label>
-            <input id="precio" formControlName="precio" type="text" placeholder="220.00" />
+            <input id="precio" formControlName="precio" type="text" placeholder="220.00" [class.is-invalid]="showFieldError('precio')" />
+
+            @if (showFieldError('precio')) {
+              <small class="field-error">{{ getFieldErrorMessage('precio') }}</small>
+            }
           </div>
 
           <div class="field-group">
@@ -91,6 +107,7 @@
                   class="visually-hidden upload-input"
                   type="file"
                   accept="image/*"
+                  data-upload-source="gallery"
                   (change)="onImageSelected($event)"
                   [disabled]="isUploadingImage() || !canUploadImages"
                 />
@@ -111,6 +128,7 @@
                     type="file"
                     accept="image/*"
                     capture="environment"
+                    data-upload-source="camera"
                     (change)="onImageSelected($event)"
                     [disabled]="isUploadingImage() || !canUploadImages"
                   />
@@ -149,7 +167,11 @@
 
           <div class="field-group full">
             <label for="imagenUrl">Imagen URL</label>
-            <input id="imagenUrl" formControlName="imagenUrl" type="url" placeholder="https://..." />
+            <input id="imagenUrl" formControlName="imagenUrl" type="url" placeholder="https://..." [class.is-invalid]="showFieldError('imagenUrl')" />
+
+            @if (showFieldError('imagenUrl')) {
+              <small class="field-error">{{ getFieldErrorMessage('imagenUrl') }}</small>
+            }
 
             @if (productForm.controls.imagenUrl.value) {
               <div class="image-preview">

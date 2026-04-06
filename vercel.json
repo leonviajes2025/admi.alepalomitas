@@ -3,11 +3,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/alepalomitasadmi/browser",
   "framework": null,
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs22.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/storage-api/:path*",

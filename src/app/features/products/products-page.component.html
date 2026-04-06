@@ -243,9 +243,13 @@
                         </div>
 
                         <div class="product-summary__content">
+                          <div class="product-summary__meta">
+                            <span class="product-mobile-label">Producto</span>
+                            <span class="product-category">{{ product.categoria }}</span>
+                          </div>
+
                           <div class="product-summary__header">
                             <strong>{{ product.nombre }}</strong>
-                            <span class="product-category">{{ product.categoria }}</span>
                           </div>
                           <p class="product-description">{{ product.descripcion }}</p>
                         </div>

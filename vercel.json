@@ -10,7 +10,7 @@
     },
     {
       "source": "/api/:path*",
-      "destination": "https://back-2-hazel.vercel.app/api/:path*"
+      "destination": "https://api.palomitasbee.com/api/:path*"
     },
     {
       "source": "/((?!api/|storage-api/).*)",

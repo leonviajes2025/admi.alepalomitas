@@ -39,9 +39,9 @@ Cuando el backend quede listo, el cambio esperado es:
 ## Entornos y despliegue
 
 - Los archivos versionados en `src/environments/` no deben contener secretos; solo actuan como valores por defecto vacios.
-- En desarrollo, `generate-environment.mjs` escribe `src/environments/environment.generated.development.ts` usando variables `NG_APP_*` y el proxy redirige a `https://back-2-hazel.vercel.app`.
+- En desarrollo, `generate-environment.mjs` escribe `src/environments/environment.generated.development.ts` usando variables `NG_APP_*` y el proxy redirige a `https://api.palomitasbee.com`.
 - En produccion, `generate-environment.mjs` escribe `src/environments/environment.generated.production.ts` usando variables `NG_APP_*` definidas en el entorno del build.
-- En Vercel, `vercel.json` reescribe `/api/*` hacia `https://back-2-hazel.vercel.app/api/*` y cualquier ruta SPA hacia `index.html`.
+- En Vercel, `vercel.json` reescribe `/api/*` hacia `https://api.palomitasbee.com/api/*` y cualquier ruta SPA hacia `index.html`.
 
 ## Desarrollo local
 

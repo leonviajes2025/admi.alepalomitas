@@ -1,13 +1,25 @@
 <section class="panel page-section">
   <div class="section-heading">
     <div>
-      <span class="section-eyebrow">Mock temporal</span>
+      <span class="section-eyebrow">Seguimiento comercial</span>
       <h2>Cotizaciones por WhatsApp</h2>
-      <p>Se muestran datos ficticios mientras el endpoint definitivo se incorpora al backend.</p>
+      <p>Consulta las solicitudes reales y actualiza el estatus de atencion del cliente.</p>
     </div>
+
+    <button class="ghost-button" type="button" (click)="loadQuotes()">Recargar</button>
   </div>
 
-  @if (quotes().length === 0) {
+  @if (errorMessage()) {
+    <p class="status-message error">{{ errorMessage() }}</p>
+  }
+
+  @if (successMessage()) {
+    <p class="status-message success">{{ successMessage() }}</p>
+  }
+
+  @if (isLoading()) {
+    <div class="empty-state">Cargando cotizaciones...</div>
+  } @else if (quotes().length === 0) {
     <div class="empty-state">No hay cotizaciones para mostrar.</div>
   } @else {
     <div class="quote-grid">
@@ -15,10 +27,22 @@
         <article class="quote-card">
           <div class="quote-card__header">
             <div>
-              <span class="badge success">{{ quote.estado }}</span>
+              <span
+                class="badge"
+                [class.quote-status--pending]="isPendingStatus(quote.clienteEstatus)"
+                [class.quote-status--in-review]="isInReviewStatus(quote.clienteEstatus)"
+                [class.success]="quote.clienteEstatus === 'respondida'"
+              >
+                {{ getStatusLabel(quote.clienteEstatus) }}
+              </span>
               <h3>{{ quote.nombre || 'Sin nombre' }}</h3>
             </div>
-            <small>{{ quote.createdAt | date: 'medium' }}</small>
+
+            @if (quote.createdAt) {
+              <small>{{ quote.createdAt | date: 'medium' }}</small>
+            } @else {
+              <small>Sin fecha registrada</small>
+            }
           </div>
 
           <p>{{ quote.cotizacion }}</p>
@@ -26,13 +50,40 @@
           <dl>
             <div>
               <dt>Entrega estimada</dt>
-              <dd>{{ quote.fechaEntregaEstimada | date: 'longDate' }}</dd>
+              <dd>
+                @if (quote.fechaEntregaEstimada) {
+                  {{ quote.fechaEntregaEstimada | date: 'longDate' }}
+                } @else {
+                  Sin definir
+                }
+              </dd>
             </div>
             <div>
               <dt>Canal</dt>
               <dd>{{ quote.canal }}</dd>
             </div>
           </dl>
+
+          <div class="quote-card__actions">
+            <label [for]="'quote-status-' + quote.id">Estatus de cliente</label>
+
+            <div class="quote-card__action-row">
+              <select
+                [id]="'quote-status-' + quote.id"
+                [value]="quote.clienteEstatus"
+                [disabled]="isUpdatingQuote(quote.id)"
+                (change)="updateClientStatus(quote, $any($event.target).value)"
+              >
+                @for (statusOption of statusOptions; track statusOption.value) {
+                  <option [value]="statusOption.value">{{ statusOption.label }}</option>
+                }
+              </select>
+
+              @if (isUpdatingQuote(quote.id)) {
+                <small class="quote-card__saving">Guardando...</small>
+              }
+            </div>
+          </div>
         </article>
       }
     </div>

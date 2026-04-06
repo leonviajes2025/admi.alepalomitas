@@ -14,7 +14,7 @@
 
 .quote-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   margin-top: 22px;
 }
@@ -38,6 +38,20 @@
   margin: 10px 0 0;
 }
 
+.quote-status--pending {
+  background: rgba(222, 112, 102, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(222, 112, 102, 0.22);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.quote-status--in-review {
+  background: rgba(213, 122, 69, 0.18);
+  color: var(--brand-strong);
+}
+
 .quote-card dl {
   display: grid;
   gap: 12px;
@@ -57,12 +71,54 @@
   font-weight: 700;
 }
 
+.quote-card__actions {
+  margin-top: 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.quote-card__actions label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.quote-card__action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quote-card__action-row select {
+  flex: 1;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
+  color: var(--text-main);
+}
+
+.quote-card__saving {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
 @media (max-width: 720px) {
   .page-section {
     padding: 20px;
   }
 
+  .quote-grid {
+    grid-template-columns: 1fr;
+  }
+
   .quote-card__header {
     flex-direction: column;
+  }
+
+  .quote-card__action-row {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

@@ -22,19 +22,18 @@ La coleccion base usada por el frontend es `back_2.postman_collection.json`.
 | Productos | GET | `/api/productos/activos` | No se usa en la version inicial del panel administrativo | Disponible en backend |
 | Contactos | GET | `/api/contactos` | Listado de contactos con filtro local por texto | Implementado |
 | Contactos | POST | `/api/contactos` | No se usa en el admin; corresponde al formulario publico | Disponible en backend |
-| Contactos WhatsApp | GET | `/api/contactos-whats` | Se reserva para la lista real de cotizaciones por WhatsApp | Pendiente de integrar |
+| Contactos WhatsApp | GET | `/api/contactos-whats` | Carga el listado real de cotizaciones por WhatsApp en la vista de administracion | Implementado |
 | Contactos WhatsApp | POST | `/api/contactos-whats` | No se usa en el admin; corresponde al alta desde otro flujo | Disponible en backend |
+| Contactos WhatsApp | PUT | `/api/contactos-whats/:id` | Actualiza el `clienteEstatus` desde la vista de cotizaciones | Implementado en frontend |
 | Cotizacion Detalle | POST | `/api/cotizacion-detalle` | No se usa en la version inicial; servira para detalle de pedidos/cotizaciones | Disponible en backend |
 
-## Decision temporal para cotizaciones WhatsApp
+## Cotizaciones WhatsApp
 
-La seccion Cotizaciones WhatsApp usa datos ficticios desde `src/app/core/content/mock-whatsapp-quotes.content.ts` porque el frontend quedo preparado para una vista de lectura aun cuando el endpoint de listado definitivo todavia no esta operativo para este flujo.
+La seccion Cotizaciones WhatsApp consume el listado real desde `/api/contactos-whats` y normaliza el `clienteEstatus` para mostrar tres estados operativos en la UI: `Pendiente`, `En revisión` y `Respondida`.
 
-Cuando el backend quede listo, el cambio esperado es:
+La actualizacion de estatus se envia con `PUT /api/contactos-whats/:id` usando un payload minimo con `clienteEstatus`.
 
-1. Reemplazar el retorno mock de `getWhatsappQuotes()` en `src/app/core/services/admin-api.service.ts` por un `HttpClient.get()` hacia `/api/contactos-whats` o el endpoint final que definas.
-2. Ajustar el modelo `WhatsappQuote` si la forma real de la respuesta cambia.
-3. Mantener el resto de la vista sin cambios, porque ya consume una coleccion tipada de lectura.
+Si la forma real de la respuesta cambia, el punto de ajuste queda centralizado en `src/app/core/services/admin-api.service.ts` y en el modelo `src/app/core/models/whatsapp-quote.model.ts`.
 
 ## Entornos y despliegue
 

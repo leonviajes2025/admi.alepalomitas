@@ -8,5 +8,9 @@
 Thumbs.db
 .DS_Store
 
-.env.example
 .env.local
+.env
+src/environments/environment.generated.development.ts
+src/environments/environment.generated.production.ts
+
+!.env.example

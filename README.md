@@ -1,11 +1,11 @@
 # Ale Palomitas Admin
 
-Aplicacion administrativa construida con Angular 19 standalone para operar productos, consultar contactos y visualizar cotizaciones recibidas por WhatsApp.
+Aplicacion administrativa construida con Angular 21 standalone para operar productos, consultar contactos y visualizar cotizaciones recibidas por WhatsApp.
 
 ## Scripts
 
 - `npm start`: levanta Angular con proxy de desarrollo definido en `proxy.conf.json`.
-- `npm run build`: genera `src/environments/environment.production.ts` y compila la salida estatica.
+- `npm run build`: genera `src/environments/environment.generated.production.ts` y compila la salida estatica.
 - `npm run watch`: build continuo en configuracion development.
 - `npm test`: ejecuta Jasmine y Karma.
 
@@ -38,32 +38,61 @@ Cuando el backend quede listo, el cambio esperado es:
 
 ## Entornos y despliegue
 
-- En desarrollo, `src/environments/environment.development.ts` usa `apiBaseUrl: '/api'` y el proxy redirige a `https://back-2-hazel.vercel.app`.
-- En produccion, `generate-environment.mjs` escribe `src/environments/environment.production.ts` usando `NG_APP_API_BASE_URL` y `NG_APP_API_DIAGNOSTICS`.
+- Los archivos versionados en `src/environments/` no deben contener secretos; solo actuan como valores por defecto vacios.
+- En desarrollo, `generate-environment.mjs` escribe `src/environments/environment.generated.development.ts` usando variables `NG_APP_*` y el proxy redirige a `https://back-2-hazel.vercel.app`.
+- En produccion, `generate-environment.mjs` escribe `src/environments/environment.generated.production.ts` usando variables `NG_APP_*` definidas en el entorno del build.
 - En Vercel, `vercel.json` reescribe `/api/*` hacia `https://back-2-hazel.vercel.app/api/*` y cualquier ruta SPA hacia `index.html`.
 
 ## Desarrollo local
 
 Con la configuracion actual, `npm start` consume el backend remoto mediante proxy, por lo que no necesitas levantar un servidor local de API para probar el frontend.
 
-Para variables locales del frontend puedes crear `/.env.local` a partir de `/.env.example`. Los scripts `npm start`, `npm run watch` y `npm run build` regeneran el environment correspondiente antes de ejecutar Angular.
+Para variables locales del frontend puedes crear `/.env.local` a partir de `/.env.example`. Los scripts `npm start`, `npm run watch` y `npm run build` generan archivos `environment.generated.*.ts` ignorados por Git antes de ejecutar Angular.
 
-## Recomendacion de variables para produccion
+## Variables minimas
 
-Si vas a desplegar este frontend en Vercel, la configuracion natural es:
+Con la configuracion actual del proyecto, estas son las variables realmente necesarias:
 
-- `NG_APP_API_BASE_URL=/api`
-- `NG_APP_API_DIAGNOSTICS=false`
-- `NG_APP_SUPABASE_STORAGE_URL=https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3`
-- `NG_APP_SUPABASE_URL=https://mrdwszirgvmrwwinepta.supabase.co`
-- `NG_APP_SUPABASE_ANON_KEY=tu_anon_key`
-- `NG_APP_SUPABASE_BUCKET=tu_bucket_publico`
-- `NG_APP_SUPABASE_PRODUCT_IMAGES_PATH=productos`
+- Desarrollo local con subida directa: `NG_APP_SUPABASE_ANON_KEY`
+- Deploy en Vercel con subida server-side: `SUPABASE_SERVICE_ROLE_KEY`
 
-De esa forma el navegador siempre consume la misma ruta relativa y Vercel se encarga de reenviar las peticiones al backend remoto.
+El resto de valores ya tiene defaults dentro del proyecto:
+
+- API base: `/api`
+- Diagnostics: `false` en produccion y `true` en desarrollo
+- Storage URL: `https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3`
+- Bucket: `productos`
+- Carpeta de imagenes: `productos`
+
+En desarrollo local puedes seguir usando `/.env.local` con solo la anon key para probar el flujo sin levantar funciones server-side.
+
+En deploy, la subida de imagenes pasa por funciones server-side y la `SUPABASE_SERVICE_ROLE_KEY` debe existir solo en Vercel. No la pongas en `NG_APP_*` ni en archivos versionados.
 
 ## Subida de imagenes a Supabase
 
 - El formulario de productos ahora permite seleccionar una imagen, subirla al bucket configurado y reutiliza la URL publica resultante en `imagenUrl`.
-- El SDK usa `NG_APP_SUPABASE_URL` si esta definido; si no, intenta derivar la URL del proyecto a partir de `NG_APP_SUPABASE_STORAGE_URL`.
+- En desarrollo, el frontend puede subir directamente si existen claves cliente en `/.env.local`.
+- En produccion, el frontend usa `/storage-api/upload` y `/storage-api/delete`, que Vercel redirige a funciones server-side bajo `api/storage`.
 - Para que la URL generada funcione directamente en el frontend, el bucket debe ser publico o debes cambiar este flujo para usar URLs firmadas.
+
+## Variables en Vercel
+
+Define solo `SUPABASE_SERVICE_ROLE_KEY` en el proyecto de Vercel.
+
+No definas en Vercel `NG_APP_SUPABASE_ANON_KEY` para evitar que una clave cliente llegue al bundle de produccion.
+
+## Deploy en Vercel
+
+Pasos minimos para desplegar:
+
+1. Importa el repositorio en Vercel sin cambiar el directorio raiz.
+2. Verifica que Vercel detecte `vercel.json` y use `npm ci` + `npm run build`.
+3. Carga en Vercel las variables listadas en la seccion anterior.
+4. Confirma que el output publicado sea `dist/alepalomitasadmi/browser`.
+5. Despliega y prueba estas rutas:
+	`/`
+	`/products`
+	`/contacts`
+	`/storage-api/upload` solo desde el flujo autenticado del admin
+
+El proyecto ya queda preparado para que Vercel publique el frontend estatico y las funciones server-side bajo `api/storage` con runtime Node 22.

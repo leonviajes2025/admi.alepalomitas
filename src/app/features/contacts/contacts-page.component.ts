@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { AdminApiService } from '../../core/services/admin-api.service';
 @Component({
   selector: 'app-contacts-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './contacts-page.component.html',
   styleUrl: './contacts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

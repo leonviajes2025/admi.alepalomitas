@@ -14,7 +14,7 @@ const apiDiagnostics = truthy.has(diagnosticsValue);
 const supabaseUrl = process.env.NG_APP_SUPABASE_URL || '';
 const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || 'https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3';
 const supabaseAnonKey = process.env.NG_APP_SUPABASE_ANON_KEY || '';
-const supabaseBucket = process.env.NG_APP_SUPABASE_BUCKET || '';
+const supabaseBucket = process.env.NG_APP_SUPABASE_BUCKET || 'productos';
 const supabaseProductImagesPath = process.env.NG_APP_SUPABASE_PRODUCT_IMAGES_PATH || 'productos';
 
 const content = `export const environment = {
@@ -33,8 +33,8 @@ const content = `export const environment = {
 
 const outputPath = resolve(
   mode === 'development'
-    ? 'src/environments/environment.development.ts'
-    : 'src/environments/environment.production.ts'
+    ? 'src/environments/environment.generated.development.ts'
+    : 'src/environments/environment.generated.production.ts'
 );
 
 await writeFile(outputPath, content, 'utf8');

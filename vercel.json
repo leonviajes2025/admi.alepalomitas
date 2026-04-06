@@ -3,13 +3,22 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/alepalomitasadmi/browser",
   "framework": null,
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs22.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/storage-api/:path*",
+      "destination": "/api/storage/:path*"
+    },
     {
       "source": "/api/:path*",
       "destination": "https://back-2-hazel.vercel.app/api/:path*"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|storage-api/).*)",
       "destination": "/index.html"
     }
   ]

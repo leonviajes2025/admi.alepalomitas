@@ -465,7 +465,10 @@ td small {
   .product-summary {
     grid-template-columns: 72px minmax(0, 1fr);
     gap: 12px;
-    padding: 12px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
 
   .product-summary__header strong {
@@ -475,6 +478,8 @@ td small {
 
   .product-media {
     border-radius: 18px;
+    border: 0;
+    box-shadow: none;
   }
 
   .product-description {
@@ -542,12 +547,13 @@ td small {
   .product-summary {
     grid-template-columns: minmax(0, 1fr);
     gap: 14px;
-    padding: 14px;
+    padding: 0;
   }
 
   .product-media {
     aspect-ratio: 16 / 10;
     max-height: 180px;
+    border-radius: 16px;
   }
 
   .product-summary__content {

@@ -1,5 +1,41 @@
 @if (showShell()) {
   <div class="app-shell">
+    <div class="page-shell mobile-nav-shell">
+      <button
+        class="mobile-nav-toggle"
+        type="button"
+        [attr.aria-expanded]="isMobileNavigationOpen()"
+        aria-controls="mobile-navigation"
+        aria-label="Abrir navegacion principal"
+        (click)="toggleMobileNavigation()"
+      >
+        <span class="mobile-nav-toggle__icon" [class.is-open]="isMobileNavigationOpen()" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="mobile-nav-toggle__label">
+          {{ isMobileNavigationOpen() ? 'Cerrar menu' : 'Menu' }}
+        </span>
+      </button>
+
+      @if (isMobileNavigationOpen()) {
+        <nav id="mobile-navigation" class="panel mobile-nav-panel" aria-label="Navegacion principal movil">
+          @for (item of navigation; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closeMobileNavigation()"
+            >
+              <span>{{ item.label }}</span>
+              <small>{{ item.description }}</small>
+            </a>
+          }
+        </nav>
+      }
+    </div>
+
     <header class="hero page-shell">
       <div class="hero-copy">
         <div class="hero-copy__top">
@@ -64,6 +100,7 @@
               [routerLink]="item.path"
               routerLinkActive="is-active"
               [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closeMobileNavigation()"
             >
               <span>{{ item.label }}</span>
               <small>{{ item.description }}</small>

@@ -34,6 +34,7 @@ export class AppComponent {
   protected readonly navigation = APP_NAVIGATION;
   protected readonly metrics = DASHBOARD_METRICS;
   protected readonly theme = signal<ThemeMode>(this.getInitialTheme());
+  protected readonly isMobileNavigationOpen = signal(false);
   protected readonly currentUser = this.authService.currentUser;
   protected readonly showShell = computed(
     () => this.authService.isAuthenticated() && !this.currentUrl().startsWith('/login')
@@ -44,8 +45,17 @@ export class AppComponent {
   }
 
   protected logout(): void {
+    this.closeMobileNavigation();
     this.authService.logout();
     void this.router.navigate(['/login']);
+  }
+
+  protected toggleMobileNavigation(): void {
+    this.isMobileNavigationOpen.update((isOpen) => !isOpen);
+  }
+
+  protected closeMobileNavigation(): void {
+    this.isMobileNavigationOpen.set(false);
   }
 
   protected setTheme(theme: ThemeMode): void {

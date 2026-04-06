@@ -158,18 +158,20 @@
               <tbody>
                 @for (product of products(); track product.id) {
                   <tr>
-                    <td>
+                    <td class="product-cell" data-label="Producto">
                       <strong>{{ product.nombre }}</strong>
                       <div>{{ product.categoria }}</div>
                       <small>{{ product.descripcion }}</small>
                     </td>
-                    <td>{{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}</td>
-                    <td>
+                    <td class="price-cell" data-label="Precio">
+                      {{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}
+                    </td>
+                    <td class="status-cell" data-label="Estado">
                       <span class="badge" [class.success]="product.activo" [class.muted]="!product.activo">
                         {{ product.activo ? 'Activo' : 'Inactivo' }}
                       </span>
                     </td>
-                    <td>
+                    <td class="actions-cell" data-label="Acciones">
                       <div class="row-actions">
                         <button
                           class="ghost-button icon-button"

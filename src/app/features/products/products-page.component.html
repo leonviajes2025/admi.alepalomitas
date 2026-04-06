@@ -1,0 +1,190 @@
+<section class="panel page-section">
+  <div class="section-heading">
+    <div>
+      <span class="section-eyebrow">Catalogo</span>
+      <h2>Productos</h2>
+      <p>Administra el CRUD del inventario publicado en la API.</p>
+    </div>
+
+    <button class="ghost-button" type="button" (click)="loadProducts()">Recargar</button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="status-message error">{{ errorMessage() }}</p>
+  }
+
+  @if (successMessage()) {
+    <p class="status-message success">{{ successMessage() }}</p>
+  }
+
+  <div class="products-layout">
+    <form class="panel editor-panel" [formGroup]="productForm" (ngSubmit)="submit()">
+      <div class="section-heading compact">
+        <div>
+          <h3>{{ editingId() === null ? 'Nuevo producto' : 'Editar producto' }}</h3>
+          <p>Captura informacion completa del producto para el backend.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" formControlName="nombre" type="text" />
+        </div>
+
+        <div class="field-group">
+          <label for="categoria">Categoria</label>
+          <select id="categoria" formControlName="categoria">
+            <option value="" disabled>Selecciona una categoria</option>
+            @for (category of categoryOptions; track category) {
+              <option [value]="category">{{ category }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field-group full">
+          <label for="descripcion">Descripcion</label>
+          <textarea id="descripcion" formControlName="descripcion"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="precio">Precio</label>
+          <input id="precio" formControlName="precio" type="text" placeholder="220.00" />
+        </div>
+
+        <div class="field-group">
+          <label for="activo">Estado</label>
+          <select id="activo" formControlName="activo">
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="field-group full">
+          <label for="productImage">Subir imagen</label>
+          <div class="upload-panel">
+            <input
+              id="productImage"
+              type="file"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              [disabled]="isUploadingImage() || !canUploadImages"
+            />
+
+            @if (canUploadImages) {
+              <p class="upload-hint">Selecciona una imagen y se cargara al bucket configurado en Supabase.</p>
+            } @else {
+              <p class="upload-hint error">Configura NG_APP_SUPABASE_ANON_KEY y NG_APP_SUPABASE_BUCKET para habilitar la subida.</p>
+            }
+
+            @if (selectedImageName()) {
+              <small>Archivo listo: {{ selectedImageName() }}</small>
+            }
+
+            @if (isUploadingImage()) {
+              <small class="upload-state">Subiendo imagen...</small>
+            }
+          </div>
+        </div>
+
+        <div class="field-group full">
+          <label for="imagenUrl">Imagen URL</label>
+          <input id="imagenUrl" formControlName="imagenUrl" type="url" placeholder="https://..." />
+
+          @if (productForm.controls.imagenUrl.value) {
+            <div class="image-preview">
+              <img [src]="productForm.controls.imagenUrl.value" [alt]="productForm.controls.nombre.value || 'Vista previa del producto'" />
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button class="action-button" type="submit" [disabled]="isSaving() || isUploadingImage()">
+          {{ editingId() === null ? 'Crear producto' : 'Guardar cambios' }}
+        </button>
+
+        <button class="ghost-button" type="button" (click)="resetForm()">Limpiar</button>
+      </div>
+    </form>
+
+    <div class="panel list-panel">
+      <div class="section-heading compact">
+        <div>
+          <h3>Listado actual</h3>
+          <p>Consulta, edita o elimina registros existentes.</p>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="empty-state">Cargando productos...</div>
+      } @else if (products().length === 0) {
+        <div class="empty-state">No hay productos registrados.</div>
+      } @else {
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (product of products(); track product.id) {
+                <tr>
+                  <td>
+                    <strong>{{ product.nombre }}</strong>
+                    <div>{{ product.categoria }}</div>
+                    <small>{{ product.descripcion }}</small>
+                  </td>
+                  <td>{{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}</td>
+                  <td>
+                    <span class="badge" [class.success]="product.activo" [class.muted]="!product.activo">
+                      {{ product.activo ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button
+                        class="ghost-button icon-button"
+                        type="button"
+                        (click)="editProduct(product)"
+                        [attr.aria-label]="'Editar ' + product.nombre"
+                        [attr.title]="'Editar ' + product.nombre"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.33H5v-.92l9.06-9.06.92.92L5.92 19.58ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.13 1.13 3.75 3.75 1.14-1.12Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span class="visually-hidden">Editar</span>
+                      </button>
+                      <button
+                        class="danger-button icon-button"
+                        type="button"
+                        (click)="deleteProduct(product)"
+                        [attr.aria-label]="'Eliminar ' + product.nombre"
+                        [attr.title]="'Eliminar ' + product.nombre"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path
+                            d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Zm1 12a2 2 0 0 1-2-2V8h12v11a2 2 0 0 1-2 2H8Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span class="visually-hidden">Eliminar</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</section>

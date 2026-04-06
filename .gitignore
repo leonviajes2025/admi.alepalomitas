@@ -1,0 +1,12 @@
+/.angular
+/coverage
+/dist
+/node_modules
+/out-tsc
+
+*.log
+Thumbs.db
+.DS_Store
+
+.env.example
+.env.local

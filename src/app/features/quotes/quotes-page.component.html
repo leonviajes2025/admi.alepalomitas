@@ -1,0 +1,40 @@
+<section class="panel page-section">
+  <div class="section-heading">
+    <div>
+      <span class="section-eyebrow">Mock temporal</span>
+      <h2>Cotizaciones por WhatsApp</h2>
+      <p>Se muestran datos ficticios mientras el endpoint definitivo se incorpora al backend.</p>
+    </div>
+  </div>
+
+  @if (quotes().length === 0) {
+    <div class="empty-state">No hay cotizaciones para mostrar.</div>
+  } @else {
+    <div class="quote-grid">
+      @for (quote of quotes(); track quote.id) {
+        <article class="quote-card">
+          <div class="quote-card__header">
+            <div>
+              <span class="badge success">{{ quote.estado }}</span>
+              <h3>{{ quote.nombre || 'Sin nombre' }}</h3>
+            </div>
+            <small>{{ quote.createdAt | date: 'medium' }}</small>
+          </div>
+
+          <p>{{ quote.cotizacion }}</p>
+
+          <dl>
+            <div>
+              <dt>Entrega estimada</dt>
+              <dd>{{ quote.fechaEntregaEstimada | date: 'longDate' }}</dd>
+            </div>
+            <div>
+              <dt>Canal</dt>
+              <dd>{{ quote.canal }}</dd>
+            </div>
+          </dl>
+        </article>
+      }
+    </div>
+  }
+</section>

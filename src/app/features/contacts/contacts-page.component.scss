@@ -1,0 +1,19 @@
+.page-section {
+  padding: 28px;
+}
+
+.page-section h2 {
+  margin: 10px 0 8px;
+  font-size: 2rem;
+}
+
+.page-section p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@media (max-width: 720px) {
+  .page-section {
+    padding: 20px;
+  }
+}

@@ -1,0 +1,144 @@
+.app-shell {
+  padding: 36px 0 44px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 28px;
+}
+
+.hero-copy {
+  padding: 24px 4px;
+}
+
+.hero-copy h1 {
+  margin: 16px 0 12px;
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 4.6rem);
+  line-height: 0.92;
+}
+
+.hero-copy p {
+  margin: 0;
+  max-width: 60ch;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 20px;
+}
+
+.hero-metrics article {
+  padding: 18px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(80, 47, 28, 0.12);
+}
+
+.hero-metrics span,
+.hero-metrics small {
+  display: block;
+}
+
+.hero-metrics span,
+.hero-metrics small {
+  color: var(--text-muted);
+}
+
+.hero-metrics strong {
+  display: block;
+  margin: 10px 0 8px;
+  font-size: 2rem;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 22px;
+}
+
+.side-nav {
+  align-self: start;
+  padding: 20px;
+  position: sticky;
+  top: 20px;
+}
+
+.side-nav__title {
+  margin: 0 0 14px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.side-nav nav {
+  display: grid;
+  gap: 10px;
+}
+
+.side-nav a {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid transparent;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.side-nav a:hover,
+.side-nav a.is-active {
+  transform: translateX(2px);
+  border-color: rgba(188, 95, 44, 0.2);
+  background: rgba(255, 245, 236, 0.92);
+}
+
+.side-nav a span,
+.side-nav a small {
+  display: block;
+}
+
+.side-nav a span {
+  font-weight: 700;
+}
+
+.side-nav a small {
+  margin-top: 6px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.view-frame {
+  min-width: 0;
+}
+
+@media (max-width: 1080px) {
+  .hero,
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .side-nav {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding-top: 22px;
+  }
+
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
+}

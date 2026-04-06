@@ -1,0 +1,68 @@
+.page-section {
+  padding: 28px;
+}
+
+.page-section h2 {
+  margin: 10px 0 8px;
+  font-size: 2rem;
+}
+
+.page-section p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.quote-card {
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(80, 47, 28, 0.12);
+  box-shadow: var(--shadow-card);
+}
+
+.quote-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.quote-card__header h3 {
+  margin: 10px 0 0;
+}
+
+.quote-card dl {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+}
+
+.quote-card dt {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.quote-card dd {
+  margin: 6px 0 0;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .page-section {
+    padding: 20px;
+  }
+
+  .quote-card__header {
+    flex-direction: column;
+  }
+}

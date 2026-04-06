@@ -159,12 +159,18 @@
                 @for (product of products(); track product.id) {
                   <tr>
                     <td class="product-cell" data-label="Producto">
-                      <strong>{{ product.nombre }}</strong>
-                      <div>{{ product.categoria }}</div>
-                      <small>{{ product.descripcion }}</small>
+                      <div class="product-summary">
+                        <div class="product-summary__header">
+                          <strong>{{ product.nombre }}</strong>
+                          <span class="product-category">{{ product.categoria }}</span>
+                        </div>
+                        <p class="product-description">{{ product.descripcion }}</p>
+                      </div>
                     </td>
                     <td class="price-cell" data-label="Precio">
-                      {{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}
+                      <span class="product-price">
+                        {{ formatPrice(product.precio) | currency: 'MXN' : 'symbol' : '1.2-2' }}
+                      </span>
                     </td>
                     <td class="status-cell" data-label="Estado">
                       <span class="badge" [class.success]="product.activo" [class.muted]="!product.activo">
@@ -186,6 +192,7 @@
                               fill="currentColor"
                             />
                           </svg>
+                          <span class="action-text">Editar</span>
                           <span class="visually-hidden">Editar</span>
                         </button>
                         <button
@@ -201,6 +208,7 @@
                               fill="currentColor"
                             />
                           </svg>
+                          <span class="action-text">Eliminar</span>
                           <span class="visually-hidden">Eliminar</span>
                         </button>
                       </div>

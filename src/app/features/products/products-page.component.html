@@ -87,7 +87,6 @@
             <div class="upload-panel">
               <div class="upload-actions">
                 <input
-                  #galleryImageInput
                   id="productImage"
                   class="visually-hidden upload-input"
                   type="file"
@@ -96,18 +95,18 @@
                   [disabled]="isUploadingImage() || !canUploadImages"
                 />
 
-                <button
+                <label
+                  for="productImage"
                   class="ghost-button upload-trigger"
-                  type="button"
-                  (click)="openFilePicker(galleryImageInput)"
-                  [disabled]="isUploadingImage() || !canUploadImages"
+                  [class.is-disabled]="isUploadingImage() || !canUploadImages"
+                  [attr.aria-disabled]="isUploadingImage() || !canUploadImages"
                 >
                   Elegir imagen
-                </button>
+                </label>
 
                 @if (isMobileImageCaptureAvailable()) {
                   <input
-                    #cameraImageInput
+                    id="productCameraImage"
                     class="visually-hidden upload-input"
                     type="file"
                     accept="image/*"
@@ -116,14 +115,14 @@
                     [disabled]="isUploadingImage() || !canUploadImages"
                   />
 
-                  <button
+                  <label
+                    for="productCameraImage"
                     class="action-button upload-trigger"
-                    type="button"
-                    (click)="openFilePicker(cameraImageInput)"
-                    [disabled]="isUploadingImage() || !canUploadImages"
+                    [class.is-disabled]="isUploadingImage() || !canUploadImages"
+                    [attr.aria-disabled]="isUploadingImage() || !canUploadImages"
                   >
                     Tomar foto
-                  </button>
+                  </label>
                 }
               </div>
 

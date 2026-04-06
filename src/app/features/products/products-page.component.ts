@@ -114,7 +114,7 @@ export class ProductsPageComponent {
     this.errorMessage.set('');
     this.successMessage.set('');
 
-    if (!file.type.startsWith('image/')) {
+    if (!this.isSupportedImageFile(file)) {
       this.errorMessage.set('Selecciona un archivo de imagen valido.');
       input.value = '';
       return;
@@ -146,10 +146,6 @@ export class ProductsPageComponent {
       this.isUploadingImage.set(false);
       input.value = '';
     }
-  }
-
-  protected openFilePicker(input: HTMLInputElement): void {
-    input.click();
   }
 
   protected editProduct(product: Product): void {
@@ -269,6 +265,14 @@ export class ProductsPageComponent {
     }
 
     return 'No fue posible subir la imagen.';
+  }
+
+  private isSupportedImageFile(file: File): boolean {
+    if (file.type.startsWith('image/')) {
+      return true;
+    }
+
+    return /\.(avif|bmp|gif|heic|heif|jpeg|jpg|png|webp)$/i.test(file.name);
   }
 
   private updateMobileImageCaptureAvailability(): void {

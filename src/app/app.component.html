@@ -36,6 +36,50 @@
       }
     </div>
 
+    <div class="page-shell desktop-nav-shell">
+      <div class="panel top-nav">
+        <p class="top-nav__title">Navegacion</p>
+
+        <nav aria-label="Navegacion principal">
+          @for (item of navigation; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              <span>{{ item.label }}</span>
+              <small>{{ item.description }}</small>
+            </a>
+          }
+        </nav>
+
+        <div class="top-nav__actions">
+          <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
+            <button
+              class="theme-switcher__button"
+              type="button"
+              [class.is-active]="theme() === 'dark'"
+              [attr.aria-selected]="theme() === 'dark'"
+              (click)="setTheme('dark')"
+            >
+              Oscuro
+            </button>
+            <button
+              class="theme-switcher__button"
+              type="button"
+              [class.is-active]="theme() === 'light'"
+              [attr.aria-selected]="theme() === 'light'"
+              (click)="setTheme('light')"
+            >
+              Claro
+            </button>
+          </div>
+
+          <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
+        </div>
+      </div>
+    </div>
+
     <header class="hero page-shell">
       <div class="hero-copy">
         <div class="hero-copy__top">
@@ -47,28 +91,30 @@
               <small>{{ currentUser()?.nombreUsuario }}</small>
             </div>
 
-            <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
-              <button
-                class="theme-switcher__button"
-                type="button"
-                [class.is-active]="theme() === 'dark'"
-                [attr.aria-selected]="theme() === 'dark'"
-                (click)="setTheme('dark')"
-              >
-                Oscuro
-              </button>
-              <button
-                class="theme-switcher__button"
-                type="button"
-                [class.is-active]="theme() === 'light'"
-                [attr.aria-selected]="theme() === 'light'"
-                (click)="setTheme('light')"
-              >
-                Claro
-              </button>
-            </div>
+            <div class="hero-copy__mobile-tools">
+              <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
+                <button
+                  class="theme-switcher__button"
+                  type="button"
+                  [class.is-active]="theme() === 'dark'"
+                  [attr.aria-selected]="theme() === 'dark'"
+                  (click)="setTheme('dark')"
+                >
+                  Oscuro
+                </button>
+                <button
+                  class="theme-switcher__button"
+                  type="button"
+                  [class.is-active]="theme() === 'light'"
+                  [attr.aria-selected]="theme() === 'light'"
+                  (click)="setTheme('light')"
+                >
+                  Claro
+                </button>
+              </div>
 
-            <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
+              <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
+            </div>
           </div>
         </div>
 
@@ -91,24 +137,6 @@
     </header>
 
     <div class="page-shell layout-grid">
-      <aside class="panel side-nav">
-        <p class="side-nav__title">Navegacion</p>
-
-        <nav>
-          @for (item of navigation; track item.path) {
-            <a
-              [routerLink]="item.path"
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closeMobileNavigation()"
-            >
-              <span>{{ item.label }}</span>
-              <small>{{ item.description }}</small>
-            </a>
-          }
-        </nav>
-      </aside>
-
       <main class="view-frame">
         <router-outlet></router-outlet>
       </main>

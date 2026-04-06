@@ -122,12 +122,26 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   min-width: 160px;
 }
 
 .upload-trigger.is-disabled {
   pointer-events: none;
   opacity: 0.6;
+}
+
+.upload-trigger.is-loading {
+  cursor: progress;
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 248, 241, 0.35);
+  border-top-color: #fff8f1;
+  border-radius: 999px;
+  animation: spin 0.7s linear infinite;
 }
 
 .upload-hint,
@@ -235,6 +249,12 @@ td small {
 
 .actions-cell {
   width: 120px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 720px) {

@@ -137,9 +137,15 @@
                     for="productCameraImage"
                     class="action-button upload-trigger"
                     [class.is-disabled]="isUploadingImage() || !canUploadImages"
+                    [class.is-loading]="isUploadingImage() && currentUploadSource() === 'camera'"
                     [attr.aria-disabled]="isUploadingImage() || !canUploadImages"
                   >
-                    Tomar foto
+                    @if (isUploadingImage() && currentUploadSource() === 'camera') {
+                      <span class="button-spinner" aria-hidden="true"></span>
+                      <span>Subiendo foto...</span>
+                    } @else {
+                      <span>Tomar foto</span>
+                    }
                   </label>
                 }
               </div>

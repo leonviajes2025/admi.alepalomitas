@@ -28,6 +28,7 @@ export class ProductsPageComponent {
   protected readonly isLoading = signal(false);
   protected readonly isSaving = signal(false);
   protected readonly isUploadingImage = signal(false);
+  protected readonly currentUploadSource = signal<'camera' | 'gallery' | null>(null);
   protected readonly editingId = signal<number | null>(null);
   protected readonly originalImageUrl = signal('');
   protected readonly pendingUploadedImageUrl = signal('');
@@ -36,11 +37,11 @@ export class ProductsPageComponent {
   protected readonly successMessage = signal('');
 
   protected readonly productForm = this.formBuilder.nonNullable.group({
-    nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80), this.noWhitespaceValidator()]],
-    categoria: ['', [Validators.required, Validators.pattern(/^(dulce|salada)$/)]],
-    descripcion: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(400), this.noWhitespaceValidator()]],
-    precio: ['', [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), this.positivePriceValidator()]],
-    imagenUrl: ['', [Validators.required, this.validUrlValidator()]],
+    nombre: ['', [Validators.required, this.noWhitespaceValidator()]],
+    categoria: ['', [Validators.required]],
+    descripcion: ['', [Validators.required, this.noWhitespaceValidator()]],
+    precio: ['', [Validators.required, this.noWhitespaceValidator()]],
+    imagenUrl: ['', [Validators.required]],
     activo: [true, [Validators.required]]
   });
 
@@ -138,6 +139,7 @@ export class ProductsPageComponent {
     }
 
     this.isUploadingImage.set(true);
+    this.currentUploadSource.set(uploadSource);
     this.selectedImageName.set(file.name);
     const previousPendingImageUrl = this.pendingUploadedImageUrl();
 
@@ -166,6 +168,7 @@ export class ProductsPageComponent {
       this.errorMessage.set(this.getUploadErrorMessage(error));
     } finally {
       this.isUploadingImage.set(false);
+      this.currentUploadSource.set(null);
       input.value = '';
     }
   }
@@ -261,35 +264,9 @@ export class ProductsPageComponent {
     }
 
     if (control.hasError('whitespace')) {
-      return controlName === 'nombre'
-        ? 'El nombre no puede contener solo espacios.'
-        : 'La descripcion no puede contener solo espacios.';
-    }
-
-    if (control.hasError('minlength')) {
-      return controlName === 'nombre'
-        ? 'El nombre debe tener al menos 3 caracteres.'
-        : 'La descripcion debe tener al menos 10 caracteres.';
-    }
-
-    if (control.hasError('maxlength')) {
-      return controlName === 'nombre'
-        ? 'El nombre no puede superar los 80 caracteres.'
-        : 'La descripcion no puede superar los 400 caracteres.';
-    }
-
-    if (control.hasError('pattern')) {
-      return controlName === 'precio'
-        ? 'Ingresa un precio valido, con hasta 2 decimales.'
-        : 'Selecciona una categoria valida.';
-    }
-
-    if (control.hasError('invalidPrice')) {
-      return 'El precio debe ser mayor a 0.';
-    }
-
-    if (control.hasError('invalidUrl')) {
-      return 'La URL de la imagen no es valida.';
+      return controlName === 'descripcion'
+        ? 'La descripcion no puede contener solo espacios.'
+        : 'Este campo no puede contener solo espacios.';
     }
 
     return 'Revisa este campo.';
@@ -359,36 +336,6 @@ export class ProductsPageComponent {
     return (control: AbstractControl<string>): ValidationErrors | null => {
       const value = control.value;
       return typeof value === 'string' && value.trim().length === 0 ? { whitespace: true } : null;
-    };
-  }
-
-  private positivePriceValidator(): ValidatorFn {
-    return (control: AbstractControl<string>): ValidationErrors | null => {
-      const value = control.value;
-
-      if (typeof value !== 'string' || value.trim().length === 0) {
-        return null;
-      }
-
-      const numericValue = Number.parseFloat(value);
-      return Number.isFinite(numericValue) && numericValue > 0 ? null : { invalidPrice: true };
-    };
-  }
-
-  private validUrlValidator(): ValidatorFn {
-    return (control: AbstractControl<string>): ValidationErrors | null => {
-      const value = control.value;
-
-      if (typeof value !== 'string' || value.trim().length === 0) {
-        return null;
-      }
-
-      try {
-        const url = new URL(value);
-        return /^https?:$/.test(url.protocol) ? null : { invalidUrl: true };
-      } catch {
-        return { invalidUrl: true };
-      }
     };
   }
 

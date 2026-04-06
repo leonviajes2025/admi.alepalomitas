@@ -32,6 +32,31 @@
               <small>{{ item.description }}</small>
             </a>
           }
+
+          <div class="mobile-nav-panel__tools">
+            <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
+              <button
+                class="theme-switcher__button"
+                type="button"
+                [class.is-active]="theme() === 'dark'"
+                [attr.aria-selected]="theme() === 'dark'"
+                (click)="setTheme('dark')"
+              >
+                Oscuro
+              </button>
+              <button
+                class="theme-switcher__button"
+                type="button"
+                [class.is-active]="theme() === 'light'"
+                [attr.aria-selected]="theme() === 'light'"
+                (click)="setTheme('light')"
+              >
+                Claro
+              </button>
+            </div>
+
+            <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
+          </div>
         </nav>
       }
     </div>
@@ -89,31 +114,6 @@
             <div class="session-pill">
               <strong>{{ currentUser()?.nombreCompleto || currentUser()?.nombreUsuario }}</strong>
               <small>{{ currentUser()?.nombreUsuario }}</small>
-            </div>
-
-            <div class="hero-copy__mobile-tools">
-              <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
-                <button
-                  class="theme-switcher__button"
-                  type="button"
-                  [class.is-active]="theme() === 'dark'"
-                  [attr.aria-selected]="theme() === 'dark'"
-                  (click)="setTheme('dark')"
-                >
-                  Oscuro
-                </button>
-                <button
-                  class="theme-switcher__button"
-                  type="button"
-                  [class.is-active]="theme() === 'light'"
-                  [attr.aria-selected]="theme() === 'light'"
-                  (click)="setTheme('light')"
-                >
-                  Claro
-                </button>
-              </div>
-
-              <button class="ghost-button" type="button" (click)="logout()">Cerrar sesion</button>
             </div>
           </div>
         </div>

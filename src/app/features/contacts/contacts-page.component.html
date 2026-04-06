@@ -24,37 +24,46 @@
   } @else if (filteredContacts().length === 0) {
     <div class="empty-state">No hay coincidencias para la busqueda actual.</div>
   } @else {
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Telefono</th>
-            <th>Promociones</th>
-            <th>Pregunta</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (contact of filteredContacts(); track contact.id) {
-            <tr>
-              <td>{{ contact.nombre }}</td>
-              <td>{{ contact.email }}</td>
-              <td>{{ contact.telefono }}</td>
-              <td>
-                <span
-                  class="badge"
-                  [class.success]="contact.aceptaPromociones"
-                  [class.muted]="!contact.aceptaPromociones"
-                >
-                  {{ contact.aceptaPromociones ? 'Acepta' : 'No acepta' }}
-                </span>
-              </td>
-              <td>{{ contact.pregunta }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
+    <div class="contacts-list" role="list">
+      @for (contact of filteredContacts(); track contact.id) {
+        <article class="contact-card" role="listitem">
+          <div class="contact-card__header">
+            <div>
+              <h3>{{ contact.nombre }}</h3>
+              <a [href]="'mailto:' + contact.email">{{ contact.email }}</a>
+            </div>
+
+            <span
+              class="badge"
+              [class.success]="contact.aceptaPromociones"
+              [class.muted]="!contact.aceptaPromociones"
+            >
+              {{ contact.aceptaPromociones ? 'Acepta promociones' : 'No acepta promociones' }}
+            </span>
+          </div>
+
+          <dl class="contact-card__details">
+            <div>
+              <dt>Telefono</dt>
+              <dd>
+                <a [href]="'tel:' + contact.telefono">{{ contact.telefono }}</a>
+              </dd>
+            </div>
+
+            @if (contact.createdAt) {
+              <div>
+                <dt>Recibido</dt>
+                <dd>{{ contact.createdAt | date: 'medium' }}</dd>
+              </div>
+            }
+          </dl>
+
+          <div class="contact-card__question">
+            <span>Pregunta</span>
+            <p>{{ contact.pregunta || 'Sin pregunta registrada.' }}</p>
+          </div>
+        </article>
+      }
     </div>
   }
 </section>

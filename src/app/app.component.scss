@@ -14,6 +14,43 @@
   padding: 24px 4px;
 }
 
+.hero-copy__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.theme-switcher {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  border: 1px solid var(--field-border);
+}
+
+.theme-switcher__button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.theme-switcher__button:hover {
+  transform: translateY(-1px);
+}
+
+.theme-switcher__button.is-active {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-strong) 100%);
+  color: #fff8f1;
+  box-shadow: 0 10px 22px rgba(142, 63, 24, 0.22);
+}
+
 .hero-copy h1 {
   margin: 16px 0 12px;
   max-width: 12ch;
@@ -40,8 +77,8 @@
 .hero-metrics article {
   padding: 18px;
   border-radius: 22px;
-  background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(80, 47, 28, 0.12);
+  background: var(--surface-soft-strong);
+  border: 1px solid var(--panel-border);
 }
 
 .hero-metrics span,
@@ -91,16 +128,16 @@
   display: block;
   padding: 14px 16px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid transparent;
+  background: var(--surface-soft-strong);
+  border: 1px solid var(--panel-border);
   transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .side-nav a:hover,
 .side-nav a.is-active {
   transform: translateX(2px);
-  border-color: rgba(188, 95, 44, 0.2);
-  background: rgba(255, 245, 236, 0.92);
+  border-color: color-mix(in srgb, var(--brand) 24%, transparent);
+  background: color-mix(in srgb, var(--brand) 14%, var(--surface-soft-strong));
 }
 
 .side-nav a span,
@@ -136,6 +173,24 @@
 @media (max-width: 640px) {
   .app-shell {
     padding-top: 22px;
+  }
+
+  .hero-copy__top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .theme-switcher {
+    width: 100%;
+    border-radius: 24px;
+  }
+
+  .theme-switcher__button {
+    flex: 1 1 0;
+  }
+
+  .hero-metrics {
+    display: none;
   }
 
   .hero-metrics {

@@ -1,6 +1,43 @@
 :root {
+  color-scheme: dark;
+  --page-bg-top: #21161b;
+  --page-bg: #120d11;
+  --bg-glow-warm: rgba(213, 122, 69, 0.24);
+  --bg-glow-cool: rgba(65, 179, 154, 0.12);
+  --panel-bg: rgba(25, 18, 23, 0.9);
+  --panel-border: rgba(243, 233, 223, 0.08);
+  --text-main: #f3e9df;
+  --text-muted: #baa596;
+  --brand: #d57a45;
+  --brand-strong: #f0a56d;
+  --accent: #41b39a;
+  --danger: #de7066;
+  --surface-soft: rgba(255, 255, 255, 0.04);
+  --surface-soft-strong: rgba(255, 255, 255, 0.06);
+  --field-bg: rgba(15, 11, 14, 0.88);
+  --field-border: rgba(243, 233, 223, 0.1);
+  --empty-bg: rgba(255, 255, 255, 0.03);
+  --empty-border: rgba(243, 233, 223, 0.16);
+  --badge-success-bg: rgba(65, 179, 154, 0.18);
+  --badge-success-text: #8ce2cf;
+  --badge-muted-bg: rgba(255, 255, 255, 0.08);
+  --badge-muted-text: #baa596;
+  --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.34);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.24);
+  --radius-xl: 28px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --font-display: "Segoe UI", "Trebuchet MS", sans-serif;
+  --font-body: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root[data-theme='light'] {
   color-scheme: light;
+  --page-bg-top: #fff8ef;
   --page-bg: #f5efe4;
+  --bg-glow-warm: rgba(255, 214, 165, 0.6);
+  --bg-glow-cool: rgba(28, 139, 115, 0.18);
   --panel-bg: rgba(255, 251, 245, 0.92);
   --panel-border: rgba(80, 47, 28, 0.14);
   --text-main: #2d1f17;
@@ -9,14 +46,18 @@
   --brand-strong: #8e3f18;
   --accent: #1c8b73;
   --danger: #b53a2d;
+  --surface-soft: rgba(188, 95, 44, 0.08);
+  --surface-soft-strong: rgba(255, 255, 255, 0.62);
+  --field-bg: rgba(255, 255, 255, 0.78);
+  --field-border: rgba(80, 47, 28, 0.18);
+  --empty-bg: rgba(255, 255, 255, 0.6);
+  --empty-border: rgba(80, 47, 28, 0.24);
+  --badge-success-bg: rgba(28, 139, 115, 0.14);
+  --badge-success-text: #116956;
+  --badge-muted-bg: rgba(45, 31, 23, 0.08);
+  --badge-muted-text: #6f5b4c;
   --shadow-soft: 0 16px 40px rgba(66, 36, 21, 0.14);
   --shadow-card: 0 10px 30px rgba(45, 31, 23, 0.08);
-  --radius-xl: 28px;
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
-  --font-display: "Segoe UI", "Trebuchet MS", sans-serif;
-  --font-body: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 * {
@@ -29,14 +70,15 @@ body {
   min-height: 100%;
   font-family: var(--font-body);
   background:
-    radial-gradient(circle at top left, rgba(255, 214, 165, 0.6), transparent 34%),
-    radial-gradient(circle at top right, rgba(28, 139, 115, 0.18), transparent 28%),
-    linear-gradient(180deg, #fff8ef 0%, var(--page-bg) 100%);
+    radial-gradient(circle at top left, var(--bg-glow-warm), transparent 34%),
+    radial-gradient(circle at top right, var(--bg-glow-cool), transparent 28%),
+    linear-gradient(180deg, var(--page-bg-top) 0%, var(--page-bg) 100%);
   color: var(--text-main);
 }
 
 body {
   min-height: 100vh;
+  transition: background 220ms ease, color 220ms ease;
 }
 
 button,
@@ -182,8 +224,8 @@ a {
   width: 100%;
   padding: 14px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(80, 47, 28, 0.18);
-  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
   color: var(--text-main);
 }
 
@@ -205,7 +247,7 @@ th,
 td {
   padding: 16px 14px;
   text-align: left;
-  border-bottom: 1px solid rgba(80, 47, 28, 0.1);
+  border-bottom: 1px solid var(--panel-border);
   vertical-align: top;
 }
 
@@ -227,28 +269,29 @@ th {
 }
 
 .badge.success {
-  background: rgba(28, 139, 115, 0.14);
-  color: #116956;
+  background: var(--badge-success-bg);
+  color: var(--badge-success-text);
 }
 
 .badge.muted {
-  background: rgba(45, 31, 23, 0.08);
-  color: var(--text-muted);
+  background: var(--badge-muted-bg);
+  color: var(--badge-muted-text);
 }
 
 .search-input {
   width: min(100%, 360px);
   padding: 14px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(80, 47, 28, 0.18);
-  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
+  color: var(--text-main);
 }
 
 .empty-state {
   padding: 28px;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px dashed rgba(80, 47, 28, 0.24);
+  background: var(--empty-bg);
+  border: 1px dashed var(--empty-border);
   text-align: center;
   color: var(--text-muted);
 }
@@ -267,7 +310,39 @@ th {
 
 .status-message.success {
   background: rgba(28, 139, 115, 0.12);
-  color: #116956;
+  color: var(--badge-success-text);
+}
+
+.hero-metrics article,
+.side-nav a,
+.contact-card,
+.quote-card,
+.editor-panel,
+.list-panel {
+  background: var(--surface-soft-strong);
+  border-color: var(--panel-border);
+}
+
+.contact-card__details div,
+.contact-card__question,
+.image-preview,
+.view-switcher {
+  background: var(--surface-soft);
+  border-color: var(--field-border);
+}
+
+:root[data-theme='dark'] .side-nav a:hover,
+:root[data-theme='dark'] .side-nav a.is-active {
+  border-color: rgba(213, 122, 69, 0.26);
+  background: rgba(213, 122, 69, 0.14);
+}
+
+:root[data-theme='dark'] .theme-switcher,
+:root[data-theme='dark'] .view-switcher,
+:root[data-theme='dark'] .contact-card__details div,
+:root[data-theme='dark'] .contact-card__question,
+:root[data-theme='dark'] .hero-metrics article {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 @media (max-width: 900px) {

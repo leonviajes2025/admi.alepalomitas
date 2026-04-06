@@ -1,4 +1,5 @@
 
+import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
@@ -8,7 +9,7 @@ import { AdminApiService } from '../../core/services/admin-api.service';
 @Component({
   selector: 'app-contacts-page',
   standalone: true,
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './contacts-page.component.html',
   styleUrl: './contacts-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

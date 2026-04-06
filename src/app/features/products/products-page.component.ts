@@ -22,6 +22,7 @@ export class ProductsPageComponent {
   protected readonly categoryOptions = ['dulce', 'salada'] as const;
   protected readonly canUploadImages = this.storageService.isConfigured();
 
+  protected readonly activeView = signal<'form' | 'list'>('form');
   protected readonly products = signal<Product[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly isSaving = signal(false);
@@ -142,6 +143,7 @@ export class ProductsPageComponent {
 
   protected editProduct(product: Product): void {
     void this.deletePendingUploadedImage();
+    this.activeView.set('form');
     this.editingId.set(product.id);
     this.originalImageUrl.set(product.imagenUrl);
     this.pendingUploadedImageUrl.set('');
@@ -194,6 +196,14 @@ export class ProductsPageComponent {
     });
   }
 
+  protected showCreateView(): void {
+    this.activeView.set('form');
+  }
+
+  protected showListView(): void {
+    this.activeView.set('list');
+  }
+
   protected formatPrice(value: string): number {
     return Number.parseFloat(value || '0');
   }
@@ -219,6 +229,7 @@ export class ProductsPageComponent {
     this.originalImageUrl.set('');
     this.pendingUploadedImageUrl.set('');
     this.resetForm();
+    this.activeView.set('list');
     this.loadProducts();
   }
 

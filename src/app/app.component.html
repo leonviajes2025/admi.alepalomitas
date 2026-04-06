@@ -1,7 +1,31 @@
 <div class="app-shell">
   <header class="hero page-shell">
     <div class="hero-copy">
-      <span class="section-eyebrow">Panel administrativo</span>
+      <div class="hero-copy__top">
+        <span class="section-eyebrow">Panel administrativo</span>
+
+        <div class="theme-switcher" role="tablist" aria-label="Selector de tema">
+          <button
+            class="theme-switcher__button"
+            type="button"
+            [class.is-active]="theme() === 'dark'"
+            [attr.aria-selected]="theme() === 'dark'"
+            (click)="setTheme('dark')"
+          >
+            Oscuro
+          </button>
+          <button
+            class="theme-switcher__button"
+            type="button"
+            [class.is-active]="theme() === 'light'"
+            [attr.aria-selected]="theme() === 'light'"
+            (click)="setTheme('light')"
+          >
+            Claro
+          </button>
+        </div>
+      </div>
+
       <h1>Gestion centralizada para productos, contactos y cotizaciones.</h1>
       <p>
         Una interfaz standalone en Angular 19 para operar el catalogo, consultar leads y monitorear

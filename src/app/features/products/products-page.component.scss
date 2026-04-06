@@ -449,11 +449,17 @@ td small {
   }
 
   .product-cell::before {
-    margin-bottom: 10px;
+    display: none;
   }
 
   .product-summary__meta {
     gap: 10px;
+  }
+
+  .product-mobile-label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
   }
 
   .product-summary {
@@ -539,10 +545,6 @@ td small {
     padding: 14px;
   }
 
-  .product-cell::before {
-    display: none;
-  }
-
   .product-media {
     aspect-ratio: 16 / 10;
     max-height: 180px;
@@ -555,12 +557,6 @@ td small {
   .product-summary__meta {
     justify-content: space-between;
     gap: 12px;
-  }
-
-  .product-mobile-label {
-    display: inline-flex;
-    align-items: center;
-    min-height: 32px;
   }
 
   .product-summary__header {

@@ -6,7 +6,10 @@
       <p>Consulta las solicitudes reales y actualiza el estatus de atencion del cliente.</p>
     </div>
 
-    <button class="ghost-button" type="button" (click)="loadQuotes()">Recargar</button>
+    <div class="section-actions">
+      <span class="panel-meta quote-status--pending">{{ pendingCount() }} pendientes</span>
+      <button class="ghost-button" type="button" (click)="loadQuotes()">Recargar</button>
+    </div>
   </div>
 
   @if (errorMessage()) {
@@ -45,9 +48,11 @@
             }
           </div>
 
-          <p>{{ quote.cotizacion }}</p>
+          <div class="quote-card__cotizacion-wrapper">
+            <p class="quote-card__cotizacion">{{ quote.cotizacion }}</p>
+          </div>
 
-          <dl>
+          <dl class="quote-card__details">
             <div>
               <dt>Entrega estimada</dt>
               <dd>

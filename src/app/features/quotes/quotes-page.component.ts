@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 
 import {
@@ -23,6 +23,7 @@ export class QuotesPageComponent {
 
   protected readonly statusOptions = WHATSAPP_QUOTE_STATUS_OPTIONS;
   protected readonly quotes = signal<WhatsappQuote[]>([]);
+  protected readonly pendingCount = computed(() => this.quotes().filter((q) => q.clienteEstatus === 'pendiente').length);
   protected readonly isLoading = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly successMessage = signal('');

@@ -27,6 +27,11 @@
   box-shadow: var(--shadow-card);
 }
 
+.quote-card {
+  display: flex;
+  flex-direction: column;
+}
+
 .quote-card__header {
   display: flex;
   justify-content: space-between;
@@ -52,10 +57,34 @@
   color: var(--brand-strong);
 }
 
+.section-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .quote-card dl {
   display: grid;
   gap: 12px;
   margin: 18px 0 0;
+}
+
+.quote-card__cotizacion-wrapper {
+  /* allow cotizacion to scroll when too large without moving actions */
+  overflow-y: auto;
+  max-height: 160px;
+  margin-top: 10px;
+  padding-right: 6px; /* room for scrollbar */
+}
+
+.quote-card__cotizacion {
+  margin: 0 0 12px 0;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.quote-card__details {
+  margin: 12px 0 0;
 }
 
 .quote-card dt {
@@ -75,6 +104,10 @@
   margin-top: 20px;
   display: grid;
   gap: 10px;
+}
+
+.quote-card__actions {
+  margin-top: auto; /* pin actions to bottom */
 }
 
 .quote-card__actions label {

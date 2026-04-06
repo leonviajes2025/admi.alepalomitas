@@ -82,7 +82,7 @@
 
           <div class="field-group">
             <label for="precio">Precio</label>
-            <input id="precio" formControlName="precio" type="text" placeholder="220.00" [class.is-invalid]="showFieldError('precio')" />
+            <input id="precio" formControlName="precio" type="text" placeholder="30.00" [class.is-invalid]="showFieldError('precio')" />
 
             @if (showFieldError('precio')) {
               <small class="field-error">{{ getFieldErrorMessage('precio') }}</small>

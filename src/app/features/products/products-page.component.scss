@@ -99,6 +99,16 @@
   gap: 8px;
 }
 
+.upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.upload-trigger {
+  min-width: 160px;
+}
+
 .upload-hint,
 .upload-state {
   font-size: 0.9rem;
@@ -229,6 +239,14 @@ td small {
   .panel-meta {
     min-height: 0;
     padding: 10px 14px;
+  }
+
+  .upload-actions {
+    flex-direction: column;
+  }
+
+  .upload-trigger {
+    width: 100%;
   }
 
   .table-wrap {

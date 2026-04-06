@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 
@@ -21,6 +21,7 @@ export class ProductsPageComponent {
   private readonly storageService = inject(SupabaseStorageService);
   protected readonly categoryOptions = ['dulce', 'salada'] as const;
   protected readonly canUploadImages = this.storageService.isConfigured();
+  protected readonly isMobileImageCaptureAvailable = signal(false);
 
   protected readonly activeView = signal<'form' | 'list'>('form');
   protected readonly products = signal<Product[]>([]);
@@ -44,7 +45,13 @@ export class ProductsPageComponent {
   });
 
   constructor() {
+    this.updateMobileImageCaptureAvailability();
     this.loadProducts();
+  }
+
+  @HostListener('window:resize')
+  protected onWindowResize(): void {
+    this.updateMobileImageCaptureAvailability();
   }
 
   protected loadProducts(): void {
@@ -139,6 +146,10 @@ export class ProductsPageComponent {
       this.isUploadingImage.set(false);
       input.value = '';
     }
+  }
+
+  protected openFilePicker(input: HTMLInputElement): void {
+    input.click();
   }
 
   protected editProduct(product: Product): void {
@@ -258,5 +269,18 @@ export class ProductsPageComponent {
     }
 
     return 'No fue posible subir la imagen.';
+  }
+
+  private updateMobileImageCaptureAvailability(): void {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+      this.isMobileImageCaptureAvailable.set(false);
+      return;
+    }
+
+    const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isNarrowViewport = window.matchMedia('(max-width: 720px)').matches;
+    const mobileUserAgent = /android|iphone|ipod|iemobile|opera mini/i.test(navigator.userAgent);
+
+    this.isMobileImageCaptureAvailable.set(hasCoarsePointer && (isNarrowViewport || mobileUserAgent));
   }
 }

@@ -7,7 +7,8 @@ const truthy = new Set(['1', 'true', 'yes', 'on']);
 
 await loadDotEnvFiles(['.env', '.env.local']);
 
-const apiBaseUrl = process.env.NG_APP_API_BASE_URL || '/api';
+const defaultApiBaseUrl = mode === 'development' ? '/api' : 'https://api.palomitasbee.com';
+const apiBaseUrl = process.env.NG_APP_API_BASE_URL || defaultApiBaseUrl;
 const diagnosticsFallback = mode === 'development' ? 'true' : 'false';
 const diagnosticsValue = (process.env.NG_APP_API_DIAGNOSTICS || diagnosticsFallback).toLowerCase();
 const apiDiagnostics = truthy.has(diagnosticsValue);

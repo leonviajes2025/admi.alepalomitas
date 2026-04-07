@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 import { Contact } from '../models/contact.model';
 import { Product, ProductPayload } from '../models/product.model';
 import { WhatsappQuote, WhatsappQuoteStatus } from '../models/whatsapp-quote.model';
@@ -23,40 +24,54 @@ interface WhatsappQuoteResponse {
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly apiBaseUrl = environment.apiBaseUrl;
+  private readonly defaultOptions = { withCredentials: true } as const;
+
+  // Rutas protegidas que se usan en este proyecto (revisarlista del backend)
+  private readonly protectedPrefixes = [
+    '/api/contactos',
+    '/api/productos',
+    '/api/contactos-whats',
+    '/api/boton-whats',
+    '/api/usuarios-acceso',
+    '/api/logs-errores'
+  ];
+
+  // Removed authorization logic
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`);
+    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`, this.defaultOptions);
   }
 
   createProduct(payload: ProductPayload): Observable<Product> {
-    return this.http.post<Product>(`${this.apiBaseUrl}/productos`, payload);
+    return this.http.post<Product>(`${this.apiBaseUrl}/productos`, payload, this.defaultOptions);
   }
 
   updateProduct(id: number, payload: Partial<ProductPayload>): Observable<Product> {
-    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, payload);
+    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, payload, this.defaultOptions);
   }
 
   deleteProduct(id: number): Observable<Product> {
     return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, {
       activo: false,
       visible: false
-    });
+    }, this.defaultOptions);
   }
 
   getContacts(): Observable<Contact[]> {
-    return this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`);
+    return this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`, this.defaultOptions);
   }
 
   getWhatsappQuotes(): Observable<WhatsappQuote[]> {
     return this.http
-      .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`)
+      .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`, this.defaultOptions)
       .pipe(map((quotes) => quotes.map((quote) => this.normalizeWhatsappQuote(quote))));
   }
 
   updateWhatsappQuoteStatus(id: number, clienteEstatus: WhatsappQuoteStatus): Observable<WhatsappQuote> {
     return this.http
-      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus })
+      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus }, this.defaultOptions)
       .pipe(map((quote) => this.normalizeWhatsappQuote(quote)));
   }
 

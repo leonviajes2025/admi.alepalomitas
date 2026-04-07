@@ -8,4 +8,5 @@ export interface AuthenticatedAdmin {
   nombreUsuario: string;
   nombreCompleto: string;
   tienePermiso: true;
+  token?: string | null;
 }

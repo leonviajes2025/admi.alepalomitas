@@ -14,6 +14,7 @@ export class AuthService {
 
   readonly currentUser = this.session.asReadonly();
   readonly isAuthenticated = computed(() => this.session() !== null);
+  readonly currentToken = computed(() => this.session()?.token ?? null);
   readonly defaultCredentials = Object.freeze({
     nombreUsuario: environment.auth.defaultUsername,
     contrasena: environment.auth.defaultPassword
@@ -25,10 +26,17 @@ export class AuthService {
       contrasena: credentials.contrasena
     };
 
-    return this.http.post<unknown>(`${this.apiBaseUrl}/usuarios-acceso/validar`, payload).pipe(
-      map((response) => this.normalizeSession(response, payload.nombreUsuario)),
-      tap((session) => this.persistSession(session))
-    );
+    // Hacer la petición indicando `withCredentials: true` para que el navegador acepte
+    // la cookie `httpOnly` que el servidor devuelva en `Set-Cookie`.
+    return this.http
+      .post<unknown>(`${this.apiBaseUrl}/usuarios-acceso/validar`, payload, {
+        observe: 'response' as const,
+        withCredentials: true
+      })
+      .pipe(
+        map((resp) => this.normalizeSession(resp.body, payload.nombreUsuario)),
+        tap((session) => this.persistSession(session))
+      );
   }
 
   logout(): void {
@@ -43,7 +51,8 @@ export class AuthService {
     this.session.set(session);
 
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(this.storageKey, JSON.stringify(session));
+      // Store session in sessionStorage so token is cleared when the tab is closed
+      window.sessionStorage.setItem(this.storageKey, JSON.stringify(session));
     }
   }
 
@@ -52,7 +61,7 @@ export class AuthService {
       return null;
     }
 
-    const rawSession = window.localStorage.getItem(this.storageKey);
+    const rawSession = window.sessionStorage.getItem(this.storageKey);
 
     if (!rawSession) {
       return null;
@@ -62,7 +71,7 @@ export class AuthService {
       const parsedSession = JSON.parse(rawSession) as unknown;
       return this.normalizeSession(parsedSession);
     } catch {
-      window.localStorage.removeItem(this.storageKey);
+      window.sessionStorage.removeItem(this.storageKey);
       return null;
     }
   }
@@ -102,6 +111,8 @@ export class AuthService {
       throw new Error('La respuesta del servicio de acceso no incluye un usuario valido.');
     }
 
+    const token = this.readString(response as Record<string, unknown>, 'token');
+
     return {
       id: this.readNumber(source, 'id') ?? this.readNumber(response, 'id') ?? null,
       nombreUsuario,
@@ -109,7 +120,8 @@ export class AuthService {
         this.readString(source, 'nombreCompleto') ??
         this.readString(response, 'nombreCompleto') ??
         '',
-      tienePermiso: true
+      tienePermiso: true,
+      token: token ?? null
     };
   }
 

@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiBaseUrl: "/api",
+  apiBaseUrl: "http://127.0.0.1:3000",
   apiDiagnostics: true,
   auth: {
     defaultUsername: "alejandrina",

@@ -41,6 +41,11 @@
       "key": "contrasenaAccesoNueva",
       "value": "Supervisor123"
     }
+    ,
+    {
+      "key": "API_KEY",
+      "value": ""
+    }
   ],
   "item": [
     {
@@ -50,7 +55,13 @@
           "name": "GET Listar contactos",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/contactos"
+            "url": "{{baseUrl}}/api/contactos",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
           }
         },
         {
@@ -148,7 +159,13 @@
           "name": "DELETE Desactivar producto",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/api/productos/{{productoId}}"
+            "url": "{{baseUrl}}/api/productos/{{productoId}}",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
           }
         }
       ]
@@ -160,7 +177,13 @@
           "name": "GET Listar solicitudes WhatsApp",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/contactos-whats"
+            "url": "{{baseUrl}}/api/contactos-whats",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
           }
         },
         {
@@ -193,6 +216,58 @@
               }
             }
           ]
+        },
+        {
+          "name": "PATCH Actualizar estatus WhatsApp",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/contactos-whats/{{pedidoId}}",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteEstatus\": \"confirmado\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Boton WhatsApp",
+      "item": [
+        {
+          "name": "GET Listar clics WhatsApp",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/boton-whats",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "POST Registrar clic WhatsApp",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/boton-whats",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
         }
       ]
     },
@@ -225,7 +300,13 @@
           "name": "GET Listar usuarios de acceso",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/usuarios-acceso"
+            "url": "{{baseUrl}}/api/usuarios-acceso",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
           }
         },
         {
@@ -237,6 +318,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
               }
             ],
             "body": {
@@ -271,6 +356,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
               }
             ],
             "body": {
@@ -288,6 +377,10 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
               }
             ],
             "body": {
@@ -327,7 +420,13 @@
           "name": "GET Listar logs de errores",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/api/logs-errores"
+            "url": "{{baseUrl}}/api/logs-errores",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{API_KEY}}"
+              }
+            ]
           }
         },
         {

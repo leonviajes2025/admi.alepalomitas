@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
@@ -25,6 +25,7 @@ export class AdminApiService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl;
 
+  // Productos
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`);
   }
@@ -44,20 +45,38 @@ export class AdminApiService {
     });
   }
 
+  // Contactos
+  // requiere una key en el header x-api-key con el valor de PRIVATE_API_KEY definido en las variables de entorno del servidor (Vercel env, etc.) para seguridad. 
   getContacts(): Observable<Contact[]> {
-    return this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`);
+    return this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`, this.buildHeaders(true));
   }
 
+  // Cotizaciones WhatsApp
+  /// requiere una key en el header x-api-key con el valor de PRIVATE_API_KEY definido en las variables de entorno del servidor (Vercel env, etc.) para seguridad.
   getWhatsappQuotes(): Observable<WhatsappQuote[]> {
     return this.http
-      .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`)
+      .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`, this.buildHeaders(true))
       .pipe(map((quotes) => quotes.map((quote) => this.normalizeWhatsappQuote(quote))));
   }
 
   updateWhatsappQuoteStatus(id: number, clienteEstatus: WhatsappQuoteStatus): Observable<WhatsappQuote> {
     return this.http
-      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus })
+      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus }, this.buildHeaders(true))
       .pipe(map((quote) => this.normalizeWhatsappQuote(quote)));
+  }
+
+  private buildHeaders(includeApiKey = false): { headers?: HttpHeaders } | {} {
+    if (!includeApiKey) {
+      return {};
+    }
+
+    const apiKey = (environment as any).privateApiKey ?? (environment as any).PRIVATE_API_KEY ?? (environment as any).apiKey;
+    if (!apiKey) {
+      return {};
+    }
+
+    const headers = new HttpHeaders({ 'x-api-key': String(apiKey) });
+    return { headers };
   }
 
   private normalizeWhatsappQuote(quote: WhatsappQuoteResponse): WhatsappQuote {

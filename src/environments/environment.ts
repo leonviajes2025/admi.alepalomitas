@@ -2,6 +2,7 @@ export const environment = {
   production: false,
   apiBaseUrl: '/api',
   apiDiagnostics: false,
+  apiKey: '',
   auth: {
     defaultUsername: 'alejandrina',
     defaultPassword: 'alejandrina123'

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, map, tap } from 'rxjs';
 
@@ -9,6 +9,7 @@ import { AuthenticatedAdmin, LoginPayload } from '../models/admin-session.model'
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl;
+  private readonly apiKey = (environment as any).privateApiKey ?? (environment as any).PRIVATE_API_KEY ?? (environment as any).apiKey;
   private readonly storageKey = 'alepalomitas-admin-session';
   private readonly session = signal<AuthenticatedAdmin | null>(this.restoreSession());
 
@@ -19,16 +20,33 @@ export class AuthService {
     contrasena: environment.auth.defaultPassword
   });
 
+  // requiere una key en el header x-api-key con el valor de PRIVATE_API_KEY definido en las variables de entorno del servidor (Vercel env, etc.) para seguridad. 
   login(credentials: LoginPayload): Observable<AuthenticatedAdmin> {
     const payload = {
       nombreUsuario: credentials.nombreUsuario.trim(),
       contrasena: credentials.contrasena
     };
 
-    return this.http.post<unknown>(`${this.apiBaseUrl}/usuarios-acceso/validar`, payload).pipe(
+    const headers = this.buildHeaders(true);
+
+    return this.http.post<unknown>(`${this.apiBaseUrl}/usuarios-acceso/validar`, payload, headers).pipe(
       map((response) => this.normalizeSession(response, payload.nombreUsuario)),
       tap((session) => this.persistSession(session))
     );
+  }
+
+    private buildHeaders(includeApiKey = false): { headers?: HttpHeaders } | {} {
+    if (!includeApiKey) {
+      return {};
+    }
+
+    const apiKey = (environment as any).privateApiKey ?? (environment as any).PRIVATE_API_KEY ?? (environment as any).apiKey;
+    if (!apiKey) {
+      return {};
+    }
+
+    const headers = new HttpHeaders({ 'x-api-key': String(apiKey) });
+    return { headers };
   }
 
   logout(): void {

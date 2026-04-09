@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { AuthService } from './auth.service';
 import { Contact } from '../models/contact.model';
 import { Product, ProductPayload } from '../models/product.model';
 import { WhatsappQuote, WhatsappQuoteStatus } from '../models/whatsapp-quote.model';
+import { HttpCacheService } from './http-cache.service';
 
 interface WhatsappQuoteResponse {
   id: number | string;
@@ -27,6 +28,7 @@ export class AdminApiService {
   private readonly authService = inject(AuthService);
   private readonly apiBaseUrl = environment.apiBaseUrl;
   private readonly defaultOptions = { withCredentials: true } as const;
+  private readonly cache = inject(HttpCacheService);
 
   // Rutas protegidas que se usan en este proyecto (revisarlista del backend)
   private readonly protectedPrefixes = [
@@ -41,39 +43,62 @@ export class AdminApiService {
   // Removed authorization logic
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`, this.defaultOptions);
+    const key = `${this.apiBaseUrl}/productos/activos`;
+    return this.cache.getOrSet<Product[]>(key, () =>
+      this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`, this.defaultOptions)
+    );
   }
 
   createProduct(payload: ProductPayload): Observable<Product> {
-    return this.http.post<Product>(`${this.apiBaseUrl}/productos`, payload, this.defaultOptions);
+    const key = `${this.apiBaseUrl}/productos/activos`;
+    return this.http.post<Product>(`${this.apiBaseUrl}/productos`, payload, this.defaultOptions).pipe(
+      tap(() => this.cache.invalidate(key))
+    );
   }
 
   updateProduct(id: number, payload: Partial<ProductPayload>): Observable<Product> {
-    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, payload, this.defaultOptions);
+    const key = `${this.apiBaseUrl}/productos/activos`;
+    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, payload, this.defaultOptions).pipe(
+      tap(() => this.cache.invalidate(key))
+    );
   }
 
   deleteProduct(id: number): Observable<Product> {
+    const key = `${this.apiBaseUrl}/productos/activos`;
     return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, {
       activo: false,
       visible: false
-    }, this.defaultOptions);
+    }, this.defaultOptions).pipe(
+      tap(() => this.cache.invalidate(key))
+    );
   }
 
   getContacts(): Observable<Contact[]> {
-    return this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`, this.defaultOptions);
+    const key = `${this.apiBaseUrl}/contactos`;
+    return this.cache.getOrSet<Contact[]>(key, () =>
+      this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`, this.defaultOptions)
+    );
   }
 
   getWhatsappQuotes(): Observable<WhatsappQuote[]> {
-    return this.http
-      .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`, this.defaultOptions)
-      .pipe(map((quotes) => quotes.map((quote) => this.normalizeWhatsappQuote(quote))));
+    const key = `${this.apiBaseUrl}/contactos-whats`;
+    return this.cache.getOrSet<WhatsappQuote[]>(key, () =>
+      this.http
+        .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`, this.defaultOptions)
+        .pipe(map((quotes) => quotes.map((quote) => this.normalizeWhatsappQuote(quote))))
+    );
   }
 
   updateWhatsappQuoteStatus(id: number, clienteEstatus: WhatsappQuoteStatus): Observable<WhatsappQuote> {
+    const key = `${this.apiBaseUrl}/contactos-whats`;
     return this.http
       .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus }, this.defaultOptions)
-      .pipe(map((quote) => this.normalizeWhatsappQuote(quote)));
+      .pipe(
+        map((quote) => this.normalizeWhatsappQuote(quote)),
+        tap(() => this.cache.invalidate(key))
+      );
   }
+
 
   private normalizeWhatsappQuote(quote: WhatsappQuoteResponse): WhatsappQuote {
     return {

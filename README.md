@@ -94,5 +94,4 @@ Pasos minimos para desplegar:
 	`/contacts`
 	`/storage-api/upload` solo desde el flujo autenticado del admin
 
-
 El proyecto ya queda preparado para que Vercel publique el frontend estatico y las funciones server-side bajo `api/storage` con runtime Node 22.

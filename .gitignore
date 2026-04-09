@@ -9,6 +9,7 @@ Thumbs.db
 .DS_Store
 
 .env.local
+.env.production
 .env
 src/environments/environment.generated.development.ts
 src/environments/environment.generated.production.ts

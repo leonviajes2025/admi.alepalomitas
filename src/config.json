@@ -1,0 +1,16 @@
+{
+  "production": false,
+  "apiBaseUrl": "/api",
+  "apiDiagnostics": true,
+  "auth": {
+    "defaultUsername": "alejandrina",
+    "defaultPassword": ""
+  },
+  "supabase": {
+    "url": "",
+    "storageUrl": "https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3",
+    "anonKey": "",
+    "bucket": "productos",
+    "productImagesPath": "productos"
+  }
+}

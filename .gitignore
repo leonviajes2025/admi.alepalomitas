@@ -1,3 +1,12 @@
+node_modules/
+dist/
+.angular/
+.env.production
+.env.local
+.env.*.local
+.cache/
+.vscode/
+/.idea/
 /.angular
 /coverage
 /dist

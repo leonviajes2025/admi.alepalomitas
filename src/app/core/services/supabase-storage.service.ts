@@ -30,23 +30,8 @@ export class SupabaseStorageService {
       .filter(Boolean)
       .join('/');
 
-    if (!hasDirectSupabaseConfig()) {
-      return this.uploadProductImageThroughApi(file);
-    }
-
-    const client = getSupabaseClient();
-    const { error } = await client.storage.from(bucket).upload(objectPath, file, {
-      cacheControl: '3600',
-      contentType: file.type || undefined,
-      upsert: false
-    });
-
-    if (error) {
-      throw new Error(error.message || 'No fue posible subir la imagen a Supabase.');
-    }
-
-    const { data } = client.storage.from(bucket).getPublicUrl(objectPath);
-    return data.publicUrl;
+    // Always use backend API to perform uploads so Supabase secrets are kept on the server.
+    return this.uploadProductImageThroughApi(file);
   }
 
   async deleteProductImageByPublicUrl(publicUrl: string): Promise<boolean> {
@@ -54,24 +39,8 @@ export class SupabaseStorageService {
       return false;
     }
 
-    if (!hasDirectSupabaseConfig()) {
-      return this.deleteProductImageThroughApi(publicUrl);
-    }
-
-    const objectPath = this.extractObjectPathFromPublicUrl(publicUrl);
-
-    if (!objectPath) {
-      return false;
-    }
-
-    const client = getSupabaseClient();
-    const { error } = await client.storage.from(environment.supabase.bucket).remove([objectPath]);
-
-    if (error) {
-      throw new Error(error.message || 'No fue posible eliminar la imagen anterior.');
-    }
-
-    return true;
+    // Always use backend API to perform deletions so Supabase secrets are kept on the server.
+    return this.deleteProductImageThroughApi(publicUrl);
   }
 
   async validateProductImageUpload(publicUrl: string): Promise<void> {

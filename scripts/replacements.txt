@@ -1,0 +1,9 @@
+# replacement rules for git-filter-repo --replace-text
+# literal replacements
+qxrchlnqbzcagfazkcgo==>REMOVED_SUPABASE_PROJECT
+
+# regex replacements (use `regex:` prefix). Remove long JWT-like tokens.
+regex:eyJ[a-zA-Z0-9_\-\.]{10,}==>REMOVED_JWT_LIKE
+
+# Generic service-role key label
+SUPABASE_SERVICE_ROLE_KEY==>REMOVED_SERVICE_ROLE_KEY

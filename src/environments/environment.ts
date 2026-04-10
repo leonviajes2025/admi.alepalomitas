@@ -1,16 +1,16 @@
 export const environment = {
-  production: false,
-  apiBaseUrl: '/api',
+  production: true,
+  apiBaseUrl: "/api",
   apiDiagnostics: false,
   auth: {
-    defaultUsername: 'alejandrina',
-    defaultPassword: 'alejandrina123'
+    defaultUsername: "",
+    defaultPassword: ""
   },
   supabase: {
-    url: '',
-    storageUrl: 'https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3',
-    anonKey: '',
-    bucket: 'productos',
-    productImagesPath: 'productos'
+    url: "https://qxrchlnqbzcagfazkcgo.supabase.co",
+    storageUrl: "https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3",
+    anonKey: "",
+    bucket: "productos",
+    productImagesPath: "productos"
   }
 } as const;

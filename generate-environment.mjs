@@ -5,7 +5,13 @@ import { resolve } from 'node:path';
 const mode = process.argv[2] === 'development' ? 'development' : 'production';
 const truthy = new Set(['1', 'true', 'yes', 'on']);
 
-await loadDotEnvFiles(['.env', '.env.local']);
+// Load .env files depending on mode. Development reads .env and .env.local;
+// production reads .env and .env.production.
+if (mode === 'development') {
+  await loadDotEnvFiles(['.env', '.env.local']);
+} else {
+  await loadDotEnvFiles(['.env', '.env.production']);
+}
 
 const defaultApiBaseUrl = mode === 'development' ? '/api' : 'https://api.palomitasbee.com';
 const apiBaseUrl = process.env.NG_APP_API_BASE_URL || defaultApiBaseUrl;
@@ -38,15 +44,19 @@ const content = `export const environment = {
 } as const;
 `;
 
-const outputPath = resolve(
+const generatedPath = resolve(
   mode === 'development'
     ? 'src/environments/environment.generated.development.ts'
     : 'src/environments/environment.generated.production.ts'
 );
 
-await writeFile(outputPath, content, 'utf8');
+const mainPath = resolve('src/environments/environment.ts');
 
-process.stdout.write(`${mode} environment generated at ${outputPath}\n`);
+// Write both a generated file (for reference) and the canonical environment.ts
+await writeFile(generatedPath, content, 'utf8');
+await writeFile(mainPath, content, 'utf8');
+
+process.stdout.write(`${mode} environment generated at ${generatedPath} and ${mainPath}\n`);
 
 async function loadDotEnvFiles(fileNames) {
   for (const fileName of fileNames) {

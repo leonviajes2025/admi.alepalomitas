@@ -63,14 +63,13 @@ El resto de valores ya tiene defaults dentro del proyecto:
 - Bucket: `productos`
 - Carpeta de imagenes: `productos`
 
-En desarrollo local puedes seguir usando `/.env.local` con solo la anon key para probar el flujo sin levantar funciones server-side.
+Tanto en desarrollo local como en producción, el frontend utilizará los endpoints server-side (`/storage-api/*`) para subir y borrar imágenes; la API correspondiente ya existe en este proyecto.
 
 En deploy, la subida de imagenes pasa por funciones server-side y la `SUPABASE_SERVICE_ROLE_KEY` debe existir solo en Vercel. No la pongas en `NG_APP_*` ni en archivos versionados.
 
 ## Subida de imagenes a Supabase
 
 - El formulario de productos ahora permite seleccionar una imagen, subirla al bucket configurado y reutiliza la URL publica resultante en `imagenUrl`.
-- En desarrollo, el frontend puede subir directamente si existen claves cliente en `/.env.local`.
 - En produccion, el frontend usa `/storage-api/upload` y `/storage-api/delete`, que Vercel redirige a funciones server-side bajo `api/storage`.
 - Para que la URL generada funcione directamente en el frontend, el bucket debe ser publico o debes cambiar este flujo para usar URLs firmadas.
 

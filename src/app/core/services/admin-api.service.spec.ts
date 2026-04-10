@@ -26,8 +26,11 @@ describe('AdminApiService', () => {
 
   it('should request products from the API base url', () => {
     service.getProducts().subscribe((products) => {
+      // Debe retornar productos activos incluso si vienen con visible: false
       expect(products.length).toBe(1);
       expect(products[0].nombre).toBe('Producto demo');
+      expect(products[0].activo).toBeTrue();
+      expect(products[0].visible).toBeFalse();
     });
 
     const request = httpMock.expectOne('/api/productos/activos');
@@ -41,7 +44,8 @@ describe('AdminApiService', () => {
         descripcion: 'Descripcion',
         precio: '120.00',
         imagenUrl: 'https://example.com/demo.jpg',
-        activo: true
+        activo: true,
+        visible: false
       }
     ]);
   });

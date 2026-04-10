@@ -15,7 +15,7 @@ const apiDiagnostics = truthy.has(diagnosticsValue);
 const authDefaultUsername = process.env.NG_APP_DEFAULT_ADMIN_USERNAME || (mode === 'development' ? 'alejandrina' : '');
 const authDefaultPassword = process.env.NG_APP_DEFAULT_ADMIN_PASSWORD || (mode === 'development' ? 'alejandrina123' : '');
 const supabaseUrl = process.env.NG_APP_SUPABASE_URL || '';
-const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || 'https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3';
+const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || '';
 const supabaseAnonKey = process.env.NG_APP_SUPABASE_ANON_KEY || '';
 const supabaseBucket = process.env.NG_APP_SUPABASE_BUCKET || 'productos';
 const supabaseProductImagesPath = process.env.NG_APP_SUPABASE_PRODUCT_IMAGES_PATH || 'productos';

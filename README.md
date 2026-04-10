@@ -59,7 +59,7 @@ El resto de valores ya tiene defaults dentro del proyecto:
 
 - API base: `/api`
 - Diagnostics: `false` en produccion y `true` en desarrollo
-- Storage URL: `https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3`
+- Storage URL: `https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3`
 - Bucket: `productos`
 - Carpeta de imagenes: `productos`
 

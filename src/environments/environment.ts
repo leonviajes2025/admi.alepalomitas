@@ -8,7 +8,7 @@ export const environment = {
   },
   supabase: {
     url: '',
-    storageUrl: 'https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3',
+    storageUrl: 'https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3',
     anonKey: '',
     bucket: 'productos',
     productImagesPath: 'productos'

@@ -10,8 +10,7 @@ function resolveProjectUrl() {
 
   const storageUrl =
     process.env.SUPABASE_STORAGE_URL ||
-    process.env.NG_APP_SUPABASE_STORAGE_URL ||
-    'https://mrdwszirgvmrwwinepta.storage.supabase.co/storage/v1/s3';
+    process.env.NG_APP_SUPABASE_STORAGE_URL || '';
 
   try {
     const parsedStorageUrl = new URL(storageUrl);
@@ -76,8 +75,13 @@ function getFileExtension(fileName) {
 }
 
 function buildObjectPath(fileName) {
-  const { productImagesPath } = assertConfig();
-  const folder = productImagesPath.trim().replace(/^\/+|\/+$/g, '');
+  const { productImagesPath, bucket } = assertConfig();
+  let folder = (productImagesPath || '').trim().replace(/^\/+|\/+$/g, '');
+
+  // Evita crear una carpeta con el mismo nombre que el bucket (p. ej. "productos/productos").
+  if (folder === bucket) {
+    folder = '';
+  }
   const cleanFileName = decodeURIComponent(fileName || 'producto.jpg');
   const extension = getFileExtension(cleanFileName);
   const baseName = sanitizeFileName(cleanFileName.replace(/\.[^.]+$/, ''));

@@ -18,7 +18,12 @@ export class SupabaseStorageService {
     }
 
     const bucket = environment.supabase.bucket;
-    const folder = environment.supabase.productImagesPath.trim().replace(/^\/+|\/+$/g, '');
+    let folder = environment.supabase.productImagesPath.trim().replace(/^\/+|\/+$/g, '');
+
+    // Evita crear una carpeta con el mismo nombre que el bucket (p. ej. "productos/productos").
+    if (folder === bucket) {
+      folder = '';
+    }
     const extension = this.getFileExtension(file.name);
     const fileName = this.sanitizeFileName(file.name.replace(/\.[^.]+$/, ''));
     const objectPath = [folder, `${Date.now()}-${crypto.randomUUID()}-${fileName}${extension}`]

@@ -9,6 +9,13 @@ import path from 'path';
 const API_BASE = process.env.API_BASE || 'http://127.0.0.1:4200';
 const filePath = path.resolve(process.cwd(), 'test.png');
 
+// If test.png doesn't exist, create a 1x1 transparent PNG from base64 so tests can run immediately.
+if (!fs.existsSync(filePath)) {
+  const onePxPngBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=';
+  fs.writeFileSync(filePath, Buffer.from(onePxPngBase64, 'base64'));
+  console.log('Created test.png (1x1 PNG)');
+}
+
 async function upload() {
   if (!fs.existsSync(filePath)) {
     console.error('Faltó test.png en la raíz del repo. Crea o añade un archivo test.png.');

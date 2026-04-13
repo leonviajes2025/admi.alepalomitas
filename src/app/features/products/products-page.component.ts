@@ -124,7 +124,15 @@ export class ProductsPageComponent {
     const file = input.files?.item(0);
     const uploadSource = input.dataset['uploadSource'] === 'camera' ? 'camera' : 'gallery';
 
+    console.info('Intento de selección de imagen del producto', {
+      uploadSource,
+      fileName: file?.name ?? null,
+      fileSize: file?.size ?? null,
+      fileType: file?.type ?? null
+    });
+
     if (!file) {
+      console.warn('No se seleccionó ningún archivo de imagen.');
       return;
     }
 

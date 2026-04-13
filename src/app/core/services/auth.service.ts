@@ -9,6 +9,7 @@ import { AuthenticatedAdmin, LoginPayload } from '../models/admin-session.model'
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly apiBaseUrl = environment.apiBaseUrl;
+  private readonly apiBaseUrlNormalized = this.ensureApiPrefix(this.apiBaseUrl);
   private readonly storageKey = 'alepalomitas-admin-session';
   private readonly session = signal<AuthenticatedAdmin | null>(this.restoreSession());
 
@@ -29,7 +30,7 @@ export class AuthService {
     // Hacer la petición indicando `withCredentials: true` para que el navegador acepte
     // la cookie `httpOnly` que el servidor devuelva en `Set-Cookie`.
     return this.http
-      .post<unknown>(`${this.apiBaseUrl}/usuarios-acceso/validar`, payload, {
+      .post<unknown>(`${this.apiBaseUrlNormalized}/usuarios-acceso/validar`, payload, {
         observe: 'response' as const,
         withCredentials: true
       })
@@ -159,5 +160,13 @@ export class AuthService {
 
   private isRecord(value: unknown): value is Record<string, unknown> {
     return typeof value === 'object' && value !== null;
+  }
+
+  private ensureApiPrefix(base: string): string {
+    if (!base) return '/api';
+    if (/\/api(\/|$)/.test(base)) {
+      return base.replace(/\/+$/g, '');
+    }
+    return base.replace(/\/+$/g, '') + '/api';
   }
 }

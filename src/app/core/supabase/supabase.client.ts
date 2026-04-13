@@ -4,21 +4,15 @@ import { environment } from '../../../environments/environment';
 
 let supabaseClient: SupabaseClient | null = null;
 
-function resolveSupabaseKey(): string {
-  return environment.supabase.anonKey || '';
-}
-
 function resolveProjectUrl(): string {
-  if (environment.supabase.url) {
-    return environment.supabase.url;
-  }
+  const supabase = (environment as any).supabase;
 
-  if (!environment.supabase.storageUrl) {
+  if (!supabase?.storageUrl) {
     return '';
   }
 
   try {
-    const storageUrl = new URL(environment.supabase.storageUrl);
+    const storageUrl = new URL(supabase.storageUrl);
     const projectRef = storageUrl.hostname.split('.storage.supabase.co')[0];
 
     return projectRef ? `https://${projectRef}.supabase.co` : '';
@@ -28,29 +22,14 @@ function resolveProjectUrl(): string {
 }
 
 export function hasSupabaseConfig(): boolean {
-  return Boolean(resolveProjectUrl() && environment.supabase.bucket);
+  return Boolean(resolveProjectUrl());
 }
 
 export function hasDirectSupabaseConfig(): boolean {
-  return Boolean(resolveProjectUrl() && resolveSupabaseKey() && environment.supabase.bucket);
+  // Direct client usage requires an anon key; project no longer provides anonKey.
+  return false;
 }
 
 export function getSupabaseClient(): SupabaseClient {
-  const projectUrl = resolveProjectUrl();
-  const supabaseKey = resolveSupabaseKey();
-
-  if (!projectUrl || !supabaseKey) {
-    throw new Error('Falta configurar la URL o una clave valida de Supabase.');
-  }
-
-  if (!supabaseClient) {
-    supabaseClient = createClient(projectUrl, supabaseKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-  }
-
-  return supabaseClient;
+  throw new Error('Direct Supabase client is not available in this build (anon key removed). Use server-side storage API instead.');
 }

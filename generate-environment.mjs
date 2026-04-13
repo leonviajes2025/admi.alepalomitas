@@ -13,18 +13,15 @@ if (mode === 'development') {
   await loadDotEnvFiles(['.env', '.env.production']);
 }
 
-const defaultApiBaseUrl = mode === 'development' ? '/api' : 'https://api.palomitasbee.com';
+const defaultApiBaseUrl = mode === 'development' ? 'http://localhost:3000' : 'https://api.palomitasbee.com';
 const apiBaseUrl = process.env.NG_APP_API_BASE_URL || defaultApiBaseUrl;
 const diagnosticsFallback = mode === 'development' ? 'true' : 'false';
 const diagnosticsValue = (process.env.NG_APP_API_DIAGNOSTICS || diagnosticsFallback).toLowerCase();
 const apiDiagnostics = truthy.has(diagnosticsValue);
 const authDefaultUsername = process.env.NG_APP_DEFAULT_ADMIN_USERNAME || (mode === 'development' ? 'alejandrina' : '');
 const authDefaultPassword = process.env.NG_APP_DEFAULT_ADMIN_PASSWORD || (mode === 'development' ? 'alejandrina123' : '');
-const supabaseUrl = process.env.NG_APP_SUPABASE_URL || '';
-const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || '';
-const supabaseAnonKey = process.env.NG_APP_SUPABASE_ANON_KEY || '';
-const supabaseBucket = process.env.NG_APP_SUPABASE_BUCKET || 'productos';
-const supabaseProductImagesPath = process.env.NG_APP_SUPABASE_PRODUCT_IMAGES_PATH || 'productos';
+// Keep only storageUrl for supabase config (can be provided via env or defaulted)
+const supabaseStorageUrl = process.env.NG_APP_SUPABASE_STORAGE_URL || 'https://qxrchlnqbzcagfazkcgo.storage.supabase.co/storage/v1/s3';
 
 const content = `export const environment = {
   production: ${mode === 'production'},
@@ -35,11 +32,7 @@ const content = `export const environment = {
     defaultPassword: ${JSON.stringify(authDefaultPassword)}
   },
   supabase: {
-    url: ${JSON.stringify(supabaseUrl)},
-    storageUrl: ${JSON.stringify(supabaseStorageUrl)},
-    anonKey: ${JSON.stringify(supabaseAnonKey)},
-    bucket: ${JSON.stringify(supabaseBucket)},
-    productImagesPath: ${JSON.stringify(supabaseProductImagesPath)}
+    storageUrl: ${JSON.stringify(supabaseStorageUrl)}
   }
 } as const;
 `;

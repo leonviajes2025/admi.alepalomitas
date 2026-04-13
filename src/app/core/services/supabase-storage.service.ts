@@ -17,20 +17,11 @@ export class SupabaseStorageService {
       throw new Error('Configura Supabase antes de intentar subir imagenes.');
     }
 
-    const bucket = environment.supabase.bucket;
-    let folder = environment.supabase.productImagesPath.trim().replace(/^\/+|\/+$/g, '');
-
-    // Evita crear una carpeta con el mismo nombre que el bucket (p. ej. "productos/productos").
-    if (folder === bucket) {
-      folder = '';
-    }
     const extension = this.getFileExtension(file.name);
     const fileName = this.sanitizeFileName(file.name.replace(/\.[^.]+$/, ''));
-    const objectPath = [folder, `${Date.now()}-${crypto.randomUUID()}-${fileName}${extension}`]
-      .filter(Boolean)
-      .join('/');
 
-    // Always use backend API to perform uploads so Supabase secrets are kept on the server.
+    // Object path composed by server-side; keep client-side filename generation
+    // minimal and delegate actual upload to backend API to keep secrets server-side.
     return this.uploadProductImageThroughApi(file);
   }
 
@@ -145,10 +136,6 @@ export class SupabaseStorageService {
       }
 
       const bucket = pathSegments[publicObjectIndex + 2];
-
-      if (bucket !== environment.supabase.bucket) {
-        return null;
-      }
 
       const objectPath = pathSegments.slice(publicObjectIndex + 3).join('/');
       return objectPath ? decodeURIComponent(objectPath) : null;

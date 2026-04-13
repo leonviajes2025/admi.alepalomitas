@@ -18,7 +18,7 @@ Rotación de claves y configuración de secretos (instrucciones)
 - En tu máquina local, guarda variables en `.env.local` (no commitear). Ejemplo:
 
   NG_APP_API_BASE_URL=/api
-  NG_APP_SUPABASE_ANON_KEY=
+  # NG_APP_SUPABASE_ANON_KEY removed from project
 
 - En GitHub Actions / CI, define los secretos como variables de entorno y pásalos al build o al servidor.
 

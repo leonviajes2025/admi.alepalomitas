@@ -52,7 +52,6 @@ Para variables locales del frontend puedes crear `/.env.local` a partir de `/.en
 
 Con la configuracion actual del proyecto, estas son las variables realmente necesarias:
 
-- Desarrollo local con subida directa: `NG_APP_SUPABASE_ANON_KEY`
 - Deploy en Vercel con subida server-side: `SUPABASE_SERVICE_ROLE_KEY`
 
 El resto de valores ya tiene defaults dentro del proyecto:
@@ -76,8 +75,6 @@ En deploy, la subida de imagenes pasa por funciones server-side y la `SUPABASE_S
 ## Variables en Vercel
 
 Define solo `SUPABASE_SERVICE_ROLE_KEY` en el proyecto de Vercel.
-
-No definas en Vercel `NG_APP_SUPABASE_ANON_KEY` para evitar que una clave cliente llegue al bundle de produccion.
 
 ## Deploy en Vercel
 

@@ -5,7 +5,7 @@ import { finalize } from 'rxjs';
 
 import { Product, ProductPayload } from '../../core/models/product.model';
 import { AdminApiService } from '../../core/services/admin-api.service';
-import { SupabaseStorageService } from '../../core/services/supabase-storage.service';
+import { StorageApiService } from '../../core/services/storage-api.service';
 
 @Component({
   selector: 'app-products-page',
@@ -18,7 +18,7 @@ import { SupabaseStorageService } from '../../core/services/supabase-storage.ser
 export class ProductsPageComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly apiService = inject(AdminApiService);
-  private readonly storageService = inject(SupabaseStorageService);
+  private readonly storageService = inject(StorageApiService);
   protected readonly categoryOptions: readonly string[] = ['dulce', 'salada', 'dulce/salada'];
   protected readonly canUploadImages = this.storageService.isConfigured();
   protected readonly isMobileImageCaptureAvailable = signal(false);
@@ -244,12 +244,21 @@ export class ProductsPageComponent {
       .deleteProduct(product.id)
       .pipe(finalize(() => this.isSaving.set(false)))
       .subscribe({
-        next: () => {
+        next: async () => {
           if (this.editingId() === product.id) {
             this.resetForm();
           }
+
           this.successMessage.set('Producto dado de baja.');
           this.loadProducts();
+
+          try {
+            if (product.imagenUrl) {
+              await this.storageService.deleteProductImageByPublicUrl(product.imagenUrl);
+            }
+          } catch {
+            // No bloquear al usuario si la eliminación de la imagen falla.
+          }
         },
         error: () => this.errorMessage.set('No fue posible eliminar el producto.')
       });

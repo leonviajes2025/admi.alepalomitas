@@ -5,7 +5,7 @@ export interface RuntimeConfig {
   apiBaseUrl?: string;
   apiDiagnostics?: boolean;
   auth?: { defaultUsername?: string; defaultPassword?: string };
-  supabase?: { url?: string; storageUrl?: string; anonKey?: string; bucket?: string; productImagesPath?: string };
+  supabase?: { storageUrl?: string };
 }
 
 export const RUNTIME_CONFIG = new InjectionToken<RuntimeConfig>('RUNTIME_CONFIG');

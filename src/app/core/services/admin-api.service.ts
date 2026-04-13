@@ -27,6 +27,7 @@ export class AdminApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly apiBaseUrl = environment.apiBaseUrl;
+  private readonly apiBaseUrlNormalized = this.ensureApiPrefix(this.apiBaseUrl);
   private readonly defaultOptions = { withCredentials: true } as const;
   private readonly cache = inject(HttpCacheService);
 
@@ -43,9 +44,9 @@ export class AdminApiService {
   // Removed authorization logic
 
   getProducts(): Observable<Product[]> {
-    const key = `${this.apiBaseUrl}/productos/activos`;
+    const key = `${this.apiBaseUrlNormalized}/productos/activos`;
     return this.cache.getOrSet<Product[]>(key, () =>
-      this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`, this.defaultOptions).pipe(
+      this.http.get<Product[]>(`${this.apiBaseUrlNormalized}/productos/activos`, this.defaultOptions).pipe(
         tap((products) => {
           if ((environment as any).apiDiagnostics) {
             // Log para diagnostico: muestra si el backend está filtrando `visible`
@@ -58,61 +59,69 @@ export class AdminApiService {
 
   // Método utilitario para forzar una consulta directa (sin cache) — útil para depuración
   fetchActiveProductsNoCache(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiBaseUrl}/productos/activos`, this.defaultOptions).pipe(
+    return this.http.get<Product[]>(`${this.apiBaseUrlNormalized}/productos/activos`, this.defaultOptions).pipe(
       tap((products) => console.debug('[AdminApiService] fetchActiveProductsNoCache:', products))
     );
   }
 
   createProduct(payload: ProductPayload): Observable<Product> {
-    const key = `${this.apiBaseUrl}/productos/activos`;
+    const key = `${this.apiBaseUrlNormalized}/productos/activos`;
     const sanitized = this.sanitizeProductPayload(payload);
-    return this.http.post<Product>(`${this.apiBaseUrl}/productos`, sanitized, this.defaultOptions).pipe(
-      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrl}/productos`))
+    return this.http.post<Product>(`${this.apiBaseUrlNormalized}/productos`, sanitized, this.defaultOptions).pipe(
+      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrlNormalized}/productos`))
     );
   }
 
   updateProduct(id: number, payload: Partial<ProductPayload>): Observable<Product> {
-    const key = `${this.apiBaseUrl}/productos/activos`;
+    const key = `${this.apiBaseUrlNormalized}/productos/activos`;
     const sanitized = this.sanitizeProductPayload(payload);
-    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, sanitized, this.defaultOptions).pipe(
-      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrl}/productos`))
+    return this.http.put<Product>(`${this.apiBaseUrlNormalized}/productos/${id}`, sanitized, this.defaultOptions).pipe(
+      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrlNormalized}/productos`))
     );
   }
 
   deleteProduct(id: number): Observable<Product> {
-    const key = `${this.apiBaseUrl}/productos/activos`;
-    return this.http.put<Product>(`${this.apiBaseUrl}/productos/${id}`, {
+    const key = `${this.apiBaseUrlNormalized}/productos/activos`;
+    return this.http.put<Product>(`${this.apiBaseUrlNormalized}/productos/${id}`, {
       activo: false,
       visible: false
     }, this.defaultOptions).pipe(
-      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrl}/productos`))
+      tap(() => this.cache.invalidatePrefix(`${this.apiBaseUrlNormalized}/productos`))
     );
   }
 
   getContacts(): Observable<Contact[]> {
-    const key = `${this.apiBaseUrl}/contactos`;
+    const key = `${this.apiBaseUrlNormalized}/contactos`;
     return this.cache.getOrSet<Contact[]>(key, () =>
-      this.http.get<Contact[]>(`${this.apiBaseUrl}/contactos`, this.defaultOptions)
+      this.http.get<Contact[]>(`${this.apiBaseUrlNormalized}/contactos`, this.defaultOptions)
     );
   }
 
   getWhatsappQuotes(): Observable<WhatsappQuote[]> {
-    const key = `${this.apiBaseUrl}/contactos-whats`;
+    const key = `${this.apiBaseUrlNormalized}/contactos-whats`;
     return this.cache.getOrSet<WhatsappQuote[]>(key, () =>
       this.http
-        .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrl}/contactos-whats`, this.defaultOptions)
+        .get<WhatsappQuoteResponse[]>(`${this.apiBaseUrlNormalized}/contactos-whats`, this.defaultOptions)
         .pipe(map((quotes) => quotes.map((quote) => this.normalizeWhatsappQuote(quote))))
     );
   }
 
   updateWhatsappQuoteStatus(id: number, clienteEstatus: WhatsappQuoteStatus): Observable<WhatsappQuote> {
-    const key = `${this.apiBaseUrl}/contactos-whats`;
+    const key = `${this.apiBaseUrlNormalized}/contactos-whats`;
     return this.http
-      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrl}/contactos-whats/${id}`, { clienteEstatus }, this.defaultOptions)
+      .patch<WhatsappQuoteResponse>(`${this.apiBaseUrlNormalized}/contactos-whats/${id}`, { clienteEstatus }, this.defaultOptions)
       .pipe(
         map((quote) => this.normalizeWhatsappQuote(quote)),
         tap(() => this.cache.invalidate(key))
       );
+  }
+
+  private ensureApiPrefix(base: string): string {
+    if (!base) return '/api';
+    if (/\/api(\/|$)/.test(base)) {
+      return base.replace(/\/+$/g, '');
+    }
+    return base.replace(/\/+$/g, '') + '/api';
   }
 
 

@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
+import { LogsApiService } from './logs.service';
 
 import { environment } from '../../../environments/environment';
 import { getSupabaseClient, hasDirectSupabaseConfig, hasSupabaseConfig } from '../supabase/supabase.client';
@@ -7,6 +9,8 @@ import { getSupabaseClient, hasDirectSupabaseConfig, hasSupabaseConfig } from '.
 export class SupabaseStorageService {
   private readonly uploadApiUrl = '/storage-api/upload';
   private readonly deleteApiUrl = '/storage-api/delete';
+
+  constructor(private logsApi: LogsApiService) {}
 
   isConfigured(): boolean {
     return hasSupabaseConfig();
@@ -65,48 +69,128 @@ export class SupabaseStorageService {
   }
 
   private async uploadProductImageThroughApi(file: File): Promise<string> {
-    const response = await fetch(this.uploadApiUrl, {
-      method: 'POST',
-      headers: {
-        'content-type': file.type || 'application/octet-stream',
-        'x-file-name': encodeURIComponent(file.name)
-      },
-      body: file
-    });
+    try {
+      const apiOrigin = this.getApiOrigin(this.uploadApiUrl);
+      const response = await fetch(this.uploadApiUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': file.type || 'application/octet-stream',
+          'x-file-name': encodeURIComponent(file.name)
+        },
+        body: file
+      });
 
-    if (!response.ok) {
-      const message = await this.readApiErrorMessage(response, 'No fue posible subir la imagen.');
-      throw new Error(message);
+      if (!response.ok) {
+        const message = await this.readApiErrorMessage(response, 'No fue posible subir la imagen.');
+        // Enviar log de error, pero no impedir rethrow
+        try {
+          await lastValueFrom(this.logsApi.createLogError({
+            dominio: apiOrigin,
+            mensaje: message,
+            origen: 'SupabaseStorageService.uploadProductImageThroughApi',
+            metodo: 'POST',
+            codigo: response.status,
+            detalle: undefined,
+            contexto: { fileName: file.name },
+            fechaOcurrencia: new Date().toISOString()
+          }));
+        } catch {
+          // Ignorar errores al enviar el log
+        }
+
+        throw new Error(message);
+      }
+
+      const payload = (await response.json()) as { publicUrl?: string };
+
+      if (!payload.publicUrl) {
+        const message = 'No fue posible obtener la URL publica de la imagen.';
+        try {
+          await lastValueFrom(this.logsApi.createLogError({
+            dominio: apiOrigin,
+            mensaje: message,
+            origen: 'SupabaseStorageService.uploadProductImageThroughApi',
+            metodo: 'POST',
+            contexto: { fileName: file.name },
+            fechaOcurrencia: new Date().toISOString()
+          }));
+        } catch {}
+
+        throw new Error(message);
+      }
+
+      return payload.publicUrl;
+    } catch (err: any) {
+      if (!(err instanceof Error)) {
+        err = new Error(String(err));
+      }
+      // Si ocurre un fallo en fetch (network), loguearlo
+      try {
+        await lastValueFrom(this.logsApi.createLogError({
+          dominio: apiOrigin,
+          mensaje: err.message || 'Error desconocido al subir imagen',
+          origen: 'SupabaseStorageService.uploadProductImageThroughApi',
+          metodo: 'POST',
+          detalle: err.stack,
+          fechaOcurrencia: new Date().toISOString()
+        }));
+      } catch {}
+
+      throw err;
     }
-
-    const payload = (await response.json()) as { publicUrl?: string };
-
-    if (!payload.publicUrl) {
-      throw new Error('No fue posible obtener la URL publica de la imagen.');
-    }
-
-    return payload.publicUrl;
   }
 
   private async deleteProductImageThroughApi(publicUrl: string): Promise<boolean> {
-    const response = await fetch(this.deleteApiUrl, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({ publicUrl })
-    });
+    try {
+      const apiOrigin = this.getApiOrigin(this.deleteApiUrl);
+      const response = await fetch(this.deleteApiUrl, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ publicUrl })
+      });
 
-    if (response.status === 404) {
-      return false;
+      if (response.status === 404) {
+        return false;
+      }
+
+      if (!response.ok) {
+        const message = await this.readApiErrorMessage(response, 'No fue posible eliminar la imagen anterior.');
+        try {
+          await lastValueFrom(this.logsApi.createLogError({
+            dominio: apiOrigin,
+            mensaje: message,
+            origen: 'SupabaseStorageService.deleteProductImageThroughApi',
+            metodo: 'POST',
+            codigo: response.status,
+            contexto: { publicUrl },
+            fechaOcurrencia: new Date().toISOString()
+          }));
+        } catch {}
+
+        throw new Error(message);
+      }
+
+      return true;
+    } catch (err: any) {
+      if (!(err instanceof Error)) {
+        err = new Error(String(err));
+      }
+      try {
+        await lastValueFrom(this.logsApi.createLogError({
+          dominio: apiOrigin,
+          mensaje: err.message || 'Error desconocido al eliminar imagen',
+          origen: 'SupabaseStorageService.deleteProductImageThroughApi',
+          metodo: 'POST',
+          detalle: err.stack,
+          contexto: { publicUrl },
+          fechaOcurrencia: new Date().toISOString()
+        }));
+      } catch {}
+
+      throw err;
     }
-
-    if (!response.ok) {
-      const message = await this.readApiErrorMessage(response, 'No fue posible eliminar la imagen anterior.');
-      throw new Error(message);
-    }
-
-    return true;
   }
 
   private async readApiErrorMessage(response: Response, fallbackMessage: string): Promise<string> {
@@ -153,4 +237,13 @@ export class SupabaseStorageService {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') || 'producto';
   }
+
+  private getApiOrigin(endpoint: string): string {
+    try {
+      return new URL(endpoint, window.location.href).origin;
+    } catch {
+      return (window.location && window.location.origin) || '';
+    }
+  }
+
 }

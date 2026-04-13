@@ -24,8 +24,16 @@ export class SupabaseStorageService {
     const extension = this.getFileExtension(file.name);
     const fileName = this.sanitizeFileName(file.name.replace(/\.[^.]+$/, ''));
 
-    // Object path composed by server-side; keep client-side filename generation
-    // minimal and delegate actual upload to backend API to keep secrets server-side.
+    // Object path is composed server-side. Still, log an estimated object path
+    // (cliente) and the upload API endpoint to help debugging in the browser.
+    try {
+      const estimatedObjectPath = `uploads/products/${Date.now()}-${fileName}${extension}`;
+      console.info('Ruta prevista de subida (estimada):', estimatedObjectPath);
+      console.info('Endpoint de subida:', this.uploadApiUrl);
+    } catch {
+      // Silenciar cualquier fallo del logger para no impactar la subida.
+    }
+
     return this.uploadProductImageThroughApi(file);
   }
 

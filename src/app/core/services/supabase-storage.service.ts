@@ -69,8 +69,8 @@ export class SupabaseStorageService {
   }
 
   private async uploadProductImageThroughApi(file: File): Promise<string> {
+    const apiOrigin = this.getApiOrigin(this.uploadApiUrl);
     try {
-      const apiOrigin = this.getApiOrigin(this.uploadApiUrl);
       const response = await fetch(this.uploadApiUrl, {
         method: 'POST',
         headers: {
@@ -141,8 +141,8 @@ export class SupabaseStorageService {
   }
 
   private async deleteProductImageThroughApi(publicUrl: string): Promise<boolean> {
+    const apiOrigin = this.getApiOrigin(this.deleteApiUrl);
     try {
-      const apiOrigin = this.getApiOrigin(this.deleteApiUrl);
       const response = await fetch(this.deleteApiUrl, {
         method: 'POST',
         headers: {

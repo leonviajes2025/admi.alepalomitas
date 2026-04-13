@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class StorageApiService {
@@ -7,6 +8,7 @@ export class StorageApiService {
   private readonly apiBaseUrlNormalized = this.ensureApiPrefix(this.apiBaseUrl);
   private readonly uploadUrl = `${this.apiBaseUrlNormalized}/storage/upload`;
   private readonly deleteUrl = `${this.apiBaseUrlNormalized}/storage/delete`;
+  private readonly authService = inject(AuthService);
 
   isConfigured(): boolean {
     return true;
@@ -20,10 +22,17 @@ export class StorageApiService {
       form.append('filename', filename);
     }
 
+    const token = this.authService.currentToken();
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(this.uploadUrl, {
       method: 'POST',
       body: form,
-      credentials: 'include'
+      credentials: 'include',
+      headers
     });
 
     if (!response.ok) {
@@ -57,9 +66,13 @@ export class StorageApiService {
       return false;
     }
 
+    const token = this.authService.currentToken();
+    const headers: Record<string, string> = { 'content-type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const response = await fetch(this.deleteUrl, {
       method: 'DELETE',
-      headers: { 'content-type': 'application/json' },
+      headers,
       body: JSON.stringify({ path: objectPath }),
       credentials: 'include'
     });

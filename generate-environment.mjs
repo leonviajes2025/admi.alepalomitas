@@ -13,7 +13,11 @@ if (mode === 'development') {
   await loadDotEnvFiles(['.env', '.env.production']);
 }
 
-const defaultApiBaseUrl = mode === 'development' ? 'http://localhost:3000' : 'https://api.palomitasbee.com';
+// In production prefer a relative API base so the frontend can call `/api/*`
+// and let the hosting (Vercel) proxy/rewrite requests to the real backend.
+// This avoids cross-origin requests and CORS issues when the external API
+// is configured on a different origin.
+const defaultApiBaseUrl = mode === 'development' ? 'http://localhost:3000' : '';
 const apiBaseUrl = process.env.NG_APP_API_BASE_URL || defaultApiBaseUrl;
 const diagnosticsFallback = mode === 'development' ? 'true' : 'false';
 const diagnosticsValue = (process.env.NG_APP_API_DIAGNOSTICS || diagnosticsFallback).toLowerCase();

@@ -22,7 +22,8 @@ export class StorageApiService {
 
     const response = await fetch(this.uploadUrl, {
       method: 'POST',
-      body: form
+      body: form,
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -59,7 +60,8 @@ export class StorageApiService {
     const response = await fetch(this.deleteUrl, {
       method: 'DELETE',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ path: objectPath })
+      body: JSON.stringify({ path: objectPath }),
+      credentials: 'include'
     });
 
     if (response.status === 404) {

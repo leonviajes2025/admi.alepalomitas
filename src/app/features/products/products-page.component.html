@@ -188,7 +188,11 @@
 
             @if (productForm.controls.imagenUrl.value) {
               <div class="image-preview">
-                <img [src]="productForm.controls.imagenUrl.value" [alt]="productForm.controls.nombre.value || 'Vista previa del producto'" />
+                <img
+                  [src]="productForm.controls.imagenUrl.value"
+                  [alt]="productForm.controls.nombre.value || 'Vista previa del producto'"
+                  (error)="onProductImageError($event, null)"
+                />
               </div>
             }
           </div>
@@ -240,7 +244,7 @@
                               [src]="product.imagenUrl"
                               [alt]="product.nombre"
                               loading="lazy"
-                              (error)="markProductImageAsFailed(product.id)"
+                              (error)="onProductImageError($event, product)"
                             />
                           } @else {
                             <div class="product-placeholder" aria-hidden="true">

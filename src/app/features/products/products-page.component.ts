@@ -309,6 +309,44 @@ export class ProductsPageComponent {
     this.failedProductImageIds.set(nextFailedImageIds);
   }
 
+  protected async onProductImageError(event: Event, product: Product | null): Promise<void> {
+    const img = event?.target as HTMLImageElement | null;
+
+    console.error('Fallo al cargar imagen:', {
+      productId: product?.id ?? null,
+      src: img?.src ?? null,
+      alt: img?.alt ?? null,
+      naturalWidth: img?.naturalWidth ?? null,
+      naturalHeight: img?.naturalHeight ?? null
+    });
+
+    if (product && product.id != null) {
+      this.markProductImageAsFailed(product.id);
+    }
+
+    if (!img || !img.src) {
+      console.warn('Imagen sin URL disponible para diagnosticar.');
+      return;
+    }
+
+    try {
+      const resp = await fetch(img.src, { method: 'HEAD' });
+
+      console.info('Verificación HEAD de la URL de la imagen:', {
+        url: img.src,
+        status: resp.status,
+        ok: resp.ok,
+        statusText: resp.statusText
+      });
+
+      if (!resp.ok) {
+        console.error(`La URL de la imagen devolvió estado HTTP ${resp.status} (${resp.statusText}).`);
+      }
+    } catch (err) {
+      console.error('No fue posible verificar la URL de la imagen (posible CORS o error de red):', err);
+    }
+  }
+
   protected showFieldError(controlName: 'nombre' | 'categoria' | 'descripcion' | 'precio' | 'imagenUrl'): boolean {
     const control = this.productForm.controls[controlName];
     return control.invalid && (control.dirty || control.touched);
